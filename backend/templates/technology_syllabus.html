@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Computer - Syllabus</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .game-title { font-family: 'Fredoka One', cursive; }
+    .fade-in { animation: fadeIn 1s ease forwards; opacity: 0; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="location.href='index.html'">
+        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-2xl">
+          💻
+        </div>
+        <div>
+          <h1 class="game-title text-2xl">Technology</h1>
+          <p class="text-sm opacity-75">Dashboard</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-6 py-10">
+    <div class="mb-10 flex items-center space-x-4">
+      <span class="text-4xl pulse">💻</span>
+      <h2 class="text-3xl font-bold text-gray-800">Syllabus</h2>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8">
+      <div class="grid md:grid-cols-2 gap-5">
+
+        <div class="fade-in bg-gradient-to-r from-blue-100 to-blue-200 hover:from-blue-200 hover:to-blue-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-blue-900 flex items-center gap-2">💻 Chapter 1: Introduction to Computers</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-green-100 to-green-200 hover:from-green-200 hover:to-green-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-green-900 flex items-center gap-2">🖥️ Chapter 2: How Computers Work</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-purple-100 to-purple-200 hover:from-purple-200 hover:to-purple-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-purple-900 flex items-center gap-2">🌐 Chapter 3: Introduction to the Internet</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-pink-100 to-pink-200 hover:from-pink-200 hover:to-pink-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-pink-900 flex items-center gap-2">📊 Chapter 4: Fun with Presentations</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-yellow-100 to-yellow-200 hover:from-yellow-200 hover:to-yellow-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-yellow-800 flex items-center gap-2">🎨 Chapter 5: Drawing & Creativity with Computers</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-indigo-100 to-indigo-200 hover:from-indigo-200 hover:to-indigo-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-indigo-900 flex items-center gap-2">📱 Chapter 6: Technology in Daily Life</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-teal-100 to-teal-200 hover:from-teal-200 hover:to-teal-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-teal-900 flex items-center gap-2">🌱 Chapter 7: Environmental Technology</h3>
+        </div>
+
+        <div class="fade-in bg-gradient-to-r from-red-100 to-red-200 hover:from-red-200 hover:to-red-300 transition-all duration-300 rounded-xl p-4 shadow-md hover:shadow-xl transform hover:-translate-y-1 cursor-pointer">
+          <h3 class="font-semibold text-lg text-red-900 flex items-center gap-2">🚀 Chapter 8: Future of Technology (Inspiration)</h3>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Levels - ShikshaDrill</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    html,
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #6366f1);
+      color: white;
+      min-height: 100vh;
+    }
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center p-6">
+  <!-- Back Button -->
+  <button onclick="goBack()"
+    class="absolute top-6 left-6 bg-white text-purple-600 px-4 py-2 rounded-lg font-semibold hover:bg-purple-50">
+    ← Back
+  </button>
+  
+  <!-- Heading -->
+  <h1 class="text-4xl md:text-5xl font-bold mb-8 text-center">
+    📝 Choose Your Level 🎯
+  </h1>
+  
+  <!-- Quiz Level Cards -->
+  <div class="w-full max-w-3xl flex flex-col space-y-6">
+    <!-- Easy Level -->
+    <div class="card p-6 rounded-2xl shadow-2xl bg-gradient-to-r from-green-400 to-green-600 cursor-pointer text-center"
+      onclick="selectLevel('easy')">
+      <h2 class="text-3xl font-bold mb-2">🌱 Easy Level</h2>
+      <p class="text-lg opacity-90">Start with basic quizzes to build your foundation.</p>
+      <p class="text-sm opacity-75 mt-2">Perfect for beginners</p>
+    </div>
+    
+    <!-- Medium Level -->
+    <div class="card p-6 rounded-2xl shadow-2xl bg-gradient-to-r from-yellow-400 to-orange-500 cursor-pointer text-center"
+      onclick="selectLevel('medium')">
+      <h2 class="text-3xl font-bold mb-2">⚡ Medium Level</h2>
+      <p class="text-lg opacity-90">Challenge yourself with moderate difficulty quizzes.</p>
+      <p class="text-sm opacity-75 mt-2">Test your growing skills</p>
+    </div>
+    
+    <!-- Hard Level -->
+    <div class="card p-6 rounded-2xl shadow-2xl bg-gradient-to-r from-red-500 to-pink-600 cursor-pointer text-center"
+      onclick="selectLevel('hard')">
+      <h2 class="text-3xl font-bold mb-2">🔥 Hard Level</h2>
+      <p class="text-lg opacity-90">Test your expertise with advanced level quizzes.</p>
+      <p class="text-sm opacity-75 mt-2">For masters only</p>
+    </div>
+  </div>
+
+  <script>
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentSubject = urlParams.get('subject');
+    
+    console.log('Level page loaded with subject:', currentSubject);
+    
+
+    function goBack() {
+      if (currentSubject) {
+        window.location.href = `/student_quizzes?subject=${currentSubject}`;
+      } else {
+        window.location.href = '/student_quizzes';
+      }
+    }
+    
+   
+    function selectLevel(level) {
+      console.log('Selected level:', level, 'Subject:', currentSubject);
+      
+     
+      let url = `/student_quizzes?level=${level}`;
+      
+      if (currentSubject) {
+        url += `&subject=${currentSubject}`;
+      }
+      
+      console.log('Navigating to:', url);
+      window.location.href = url;
+    }
+  </script>
+</body>
+</html>

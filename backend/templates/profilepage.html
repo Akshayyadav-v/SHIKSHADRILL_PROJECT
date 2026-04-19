@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShikshaDrill - Student Profile</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;500;600;700&display=swap');
+    body { font-family: 'Poppins', sans-serif; }
+    .game-title { font-family: 'Fredoka One', cursive; }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+    
+    .gender-disabled { opacity: 0.6; pointer-events: none; filter: grayscale(100%); }
+    .gender-btn { transition: all 0.2s; }
+    .gender-btn.active { background:#4f46e5; color:white; border-color: #4f46e5; transform: scale(1.05); }
+    
+    .locked-blur { filter: blur(3px) grayscale(90%); opacity: 0.6; }
+    
+    model-viewer {
+      background-color: transparent;
+      --poster-color: transparent;
+      outline: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+
+<header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-2xl">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+        <span class="text-white font-bold text-xl">🎓</span>
+      </div>
+      <div>
+        <h1 class="game-title text-2xl">ShikshaDrill</h1>
+        <p class="text-blue-100 text-lg">Student Profile</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <button onclick="goBackHome()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg backdrop-blur-sm transition-all">
+        ← Back to Home
+      </button>
+      <div class="text-right">
+        <p id="headerName" class="font-semibold">Loading...</p>
+        <p class="text-blue-100 text-xs">Student</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+
+<section class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+  <div class="flex justify-between mb-4">
+    <h2 class="text-xl font-bold">👤 Profile</h2>
+    <div>
+      <button id="editBtn" class="px-3 py-1 bg-indigo-600 text-white rounded shadow hover:bg-indigo-700">Edit Profile</button>
+      <button id="saveBtn" class="px-3 py-1 bg-green-600 text-white rounded hidden shadow hover:bg-green-700">Save Changes</button>
+    </div>
+  </div>
+
+  <div class="flex flex-col sm:flex-row gap-6">
+    <div class="text-center">
+      <div class="w-48 h-48 rounded-full bg-gradient-to-b from-indigo-50 to-white overflow-hidden mx-auto border-4 border-indigo-100 shadow-inner relative">
+        <model-viewer id="profileAvatar" 
+                      auto-rotate 
+                      camera-controls 
+                      shadow-intensity="1" 
+                      style="width:100%; height:100%;" 
+                      alt="My Avatar">
+        </model-viewer>
+      </div>
+      
+      <div id="genderBox" class="mt-4 flex gap-3 justify-center gender-disabled">
+        <button id="femaleBtn" class="gender-btn px-4 py-2 border-2 border-gray-200 rounded-lg font-medium text-gray-600">👩 Female</button>
+        <button id="maleBtn" class="gender-btn px-4 py-2 border-2 border-gray-200 rounded-lg font-medium text-gray-600">👨 Male</button>
+      </div>
+    </div>
+
+    <div class="flex-1 grid sm:grid-cols-2 gap-4 text-gray-700 content-center">
+      <div>
+        <label class="text-xs text-gray-400 uppercase font-bold">Name</label>
+        <p id="displayName" class="text-lg font-semibold text-gray-800">Loading...</p>
+        <input id="inputName" class="hidden border-2 border-indigo-200 w-full px-2 py-1 mt-1 rounded focus:outline-none">
+
+        <label class="text-xs text-gray-400 uppercase font-bold mt-3 block">Roll Number</label>
+        <p id="displayRoll" class="text-lg font-semibold text-gray-800">--</p>
+
+        <label class="text-xs text-gray-400 uppercase font-bold mt-3 block">Gender</label>
+        <p class="text-lg font-semibold text-gray-800"><span id="displayGender">--</span></p>
+      </div>
+      <div>
+        <label class="text-xs text-gray-400 uppercase font-bold">Email</label>
+        <p id="displayEmail" class="text-lg font-semibold text-gray-800">Loading...</p>
+
+        <label class="text-xs text-gray-400 uppercase font-bold mt-3 block">Role</label>
+        <p id="displayRole" class="text-lg font-semibold text-gray-800">Student</p>
+
+        <label class="text-xs text-gray-400 uppercase font-bold mt-3 block">Date of Birth</label>
+        <p id="displayDOB" class="text-lg font-semibold text-gray-800">--</p>
+        <input type="date" id="inputDOB" class="hidden border-2 border-indigo-200 w-full px-2 py-1 mt-1 rounded focus:outline-none">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+  <h2 class="text-xl font-bold mb-3">🏅 XP & Badges</h2>
+  <div class="text-lg font-semibold text-indigo-600 mb-4">
+    Total XP: <span id="totalXP" class="text-2xl font-bold">0</span> 🪙
+  </div>
+  <div class="flex flex-wrap gap-3">
+    <div class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-semibold border border-yellow-300">🥇 Quiz Master</div>
+    <div class="bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-semibold border border-pink-300">⚡ Fast Learner</div>
+    <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-semibold border border-green-300">📚 Top Performer</div>
+  </div>
+</section>
+
+<section class="bg-gradient-to-r from-slate-800 to-indigo-900 rounded-2xl p-6 shadow-lg text-white card-hover">
+  <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+    <div>
+      <h2 class="text-2xl font-bold flex items-center text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
+        🛒 XP Store
+      </h2>
+      <p class="text-indigo-200 text-sm mt-1" id="storeMessage">Spend XP to unlock cool avatars!</p>
+    </div>
+    <div class="bg-white/10 px-6 py-2 rounded-full backdrop-blur-md border border-white/20">
+        Balance: <span id="storeBalance" class="font-bold text-yellow-400 text-xl ml-1">0</span> 🪙
+    </div>
+  </div>
+
+  <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+      <h3 class="text-sm font-bold text-gray-400 uppercase mb-3 tracking-wider">Unlockable Avatars</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="storeGrid">
+        </div>
+  </div>
+</section>
+
+<section class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+  <h2 class="text-xl font-bold mb-4 text-center">🏆 Your Quiz History</h2>
+  <div id="quizHistory" class="space-y-2">
+    <p class="text-gray-500 text-center py-4">Loading quiz attempts...</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+const API_BASE_URL = '';  
+
+const DEFAULT_FEMALE_AVATAR = '/static/models/female_avatar.glb';
+const DEFAULT_MALE_AVATAR = '/static/models/male_avatar.glb';
+
+const storeItems = [
+    // Female avatars
+    { 
+        id: 'f_default', 
+        name: 'Basic Female', 
+        type: 'female', 
+        cost: 0, 
+        modelUrl: '/static/models/female_avatar.glb'  // Free default
+    },
+    { 
+        id: 'f_premium_1', 
+        name: 'Cool Style', 
+        type: 'female', 
+        cost: 500, 
+        modelUrl: '/static/models/female_avatar1.glb'  // 500 XP
+    },
+    { 
+        id: 'f_premium_2', 
+        name: 'Pro Student', 
+        type: 'female', 
+        cost: 800, 
+        modelUrl: '/static/models/female_avatar2.glb'  // 800 XP
+    },
+    
+    // Male avatars
+    { 
+        id: 'm_default', 
+        name: 'Basic Male', 
+        type: 'male', 
+        cost: 0, 
+        modelUrl: '/static/models/male_avatar.glb'  // Free default
+    },
+    { 
+        id: 'm_premium_1', 
+        name: 'Casual Look', 
+        type: 'male', 
+        cost: 500, 
+        modelUrl: '/static/models/male_avatar1.glb'  // 500 XP
+    },
+    { 
+        id: 'm_premium_2', 
+        name: 'Sporty Look', 
+        type: 'male', 
+        cost: 800, 
+        modelUrl: '/static/models/male_avatar2.glb'  // 800 XP
+    }
+];
+
+const avatar = document.getElementById('profileAvatar');
+const femaleBtn = document.getElementById('femaleBtn');
+const maleBtn = document.getElementById('maleBtn');
+const displayGender = document.getElementById('displayGender');
+const genderBox = document.getElementById('genderBox');
+const totalXPEl = document.getElementById('totalXP');
+const storeBalanceEl = document.getElementById('storeBalance');
+const storeGrid = document.getElementById('storeGrid');
+const storeMessage = document.getElementById('storeMessage');
+const editBtn = document.getElementById('editBtn');
+const saveBtn = document.getElementById('saveBtn');
+const displayName = document.getElementById('displayName');
+const inputName = document.getElementById('inputName');
+const displayEmail = document.getElementById('displayEmail');
+const displayRoll = document.getElementById('displayRoll');
+const displayRole = document.getElementById('displayRole');
+const displayDOB = document.getElementById('displayDOB');
+const inputDOB = document.getElementById('inputDOB');
+const headerName = document.getElementById('headerName');
+const quizHistory = document.getElementById('quizHistory');
+
+let userData = null;
+let currentXP = 0;
+let gender = 'female';
+let ownedItems = ['f_default', 'm_default'];
+let currentAvatarUrl = null;
+
+function getAuthToken() {
+    return localStorage.getItem('idToken');  
+}
+
+
+function checkAuth() {
+    const token = getAuthToken();
+    if (!token) {
+        alert('Please login first!');
+        window.location.href = '/signup';
+        return false;
+    }
+    return true;
+}
+
+async function fetchUserProfile() {
+    const token = getAuthToken();
+    if (!token) return null;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/profile`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+        }
+
+        const data = await response.json();
+        return data.profile;
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('idToken'); 
+        window.location.href = '/signup';
+        return null;
+    }
+}
+
+async function updateBackendProfile(updates) {
+    const token = getAuthToken();
+    if (!token) return false;
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/profile`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updates)
+        });
+
+        return response.ok;
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return false;
+    }
+}
+
+function loadProfileData() {
+    if (userData.profileGender) {
+        gender = userData.profileGender;
+    }
+    
+    if (userData.ownedAvatars && Array.isArray(userData.ownedAvatars)) {
+        ownedItems = userData.ownedAvatars;
+    } else {
+        ownedItems = ['f_default', 'm_default']; 
+    }
+    
+    if (userData.currentAvatar) {
+        currentAvatarUrl = userData.currentAvatar;
+    }
+    
+    const uid = userData?.uid || 'default';
+    const profileKey = `profile_${uid}`;
+    const saved = localStorage.getItem(profileKey);
+    
+    if (saved) {
+        const data = JSON.parse(saved);
+
+        if (!userData.profileGender && data.gender) {
+            gender = data.gender;
+        }
+        if ((!userData.ownedAvatars || userData.ownedAvatars.length === 0) && data.ownedItems) {
+            ownedItems = data.ownedItems;
+        }
+        if (!userData.currentAvatar && data.currentAvatarUrl) {
+            currentAvatarUrl = data.currentAvatarUrl;
+        }
+    }
+}
+
+async function saveProfileData() {
+    if (!userData) return;
+    
+    const uid = userData.uid;
+    const profileKey = `profile_${uid}`;
+    
+    const data = {
+        gender,
+        ownedItems,
+        currentAvatarUrl
+    };
+    
+    localStorage.setItem(profileKey, JSON.stringify(data));
+   
+    await updateBackendProfile({
+        profileGender: gender,
+        ownedAvatars: ownedItems,
+        currentAvatar: currentAvatarUrl
+    });
+    
+    console.log('✅ Saved to Firestore:', {
+        gender,
+        ownedItems,
+        currentAvatarUrl
+    });
+}
+
+function updateXPUI() {
+    totalXPEl.textContent = currentXP;
+    storeBalanceEl.textContent = currentXP;
+}
+
+function renderStore() {
+    storeGrid.innerHTML = '';
+    const genderIcon = gender === 'female' ? '👩' : '👨';
+    storeMessage.innerHTML = `Unlockable Avatars for <span class="font-bold text-white">${gender.toUpperCase()} ${genderIcon}</span>`;
+
+    const filteredItems = storeItems.filter(item => item.type === gender);
+
+    filteredItems.forEach(item => {
+        const isOwned = ownedItems.includes(item.id);
+        const isDefault = item.cost === 0;
+        const isEquipped = (currentAvatarUrl === item.modelUrl) || (!currentAvatarUrl && isDefault);
+        const canAfford = currentXP >= item.cost;
+        
+        let actionBtn = '';
+        let cardClass = 'bg-white text-gray-800';
+        let overlay = '';
+        let imageStyle = '';
+
+        if (isEquipped) {
+            actionBtn = `<button disabled class="w-full py-1.5 rounded text-xs font-bold bg-green-500 text-white">Wearing</button>`;
+            cardClass = 'bg-indigo-50 border-2 border-indigo-400 shadow-xl transform scale-105';
+        } else if (isOwned) {
+            actionBtn = `<button onclick="equipAvatar('${item.modelUrl}')" class="w-full py-1.5 rounded text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-700">Equip</button>`;
+        } else if (canAfford) {
+            actionBtn = `<button onclick="buyItem('${item.id}', ${item.cost})" class="w-full py-1.5 rounded text-xs font-semibold bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow">Unlock ${item.cost} 🪙</button>`;
+            overlay = '<div class="absolute top-2 right-2 text-xs bg-yellow-400 text-yellow-900 font-bold px-2 py-0.5 rounded-full z-10">LOCKED</div>';
+            imageStyle = 'locked-blur'; 
+            cardClass = 'bg-gray-100';
+        } else {
+            actionBtn = `<button disabled class="w-full py-1.5 rounded text-xs font-semibold bg-gray-400 text-white cursor-not-allowed">Need ${item.cost} 🪙</button>`;
+            cardClass = 'bg-gray-200 opacity-90';
+            overlay = '<div class="absolute top-2 right-2 text-xs bg-gray-600 text-white font-bold px-2 py-0.5 rounded-full z-10">LOCKED</div>';
+            imageStyle = 'locked-blur';
+        }
+
+        const html = `
+            <div class="${cardClass} relative rounded-xl p-2 flex flex-col justify-between transition-all duration-300 h-64">
+                ${overlay}
+                <div class="flex-1 w-full overflow-hidden rounded-lg bg-gray-50 mb-2 relative ${imageStyle}">
+                     <model-viewer src="${item.modelUrl}" auto-rotate disable-zoom disable-pan interaction-prompt="none" style="width:100%; height:100%;" shadow-intensity="1"></model-viewer>
+                </div>
+                <div class="text-center">
+                    <h3 class="font-bold text-xs mb-2 truncate">${item.name}</h3>
+                    ${actionBtn}
+                </div>
+            </div>
+        `;
+        storeGrid.insertAdjacentHTML('beforeend', html);
+    });
+}
+
+function refreshProfileUI() {
+    if (gender === 'female') {
+        displayGender.textContent = 'Female 👩';
+        femaleBtn.classList.add('active');
+        maleBtn.classList.remove('active');
+    } else {
+        displayGender.textContent = 'Male 👨';
+        maleBtn.classList.add('active');
+        femaleBtn.classList.remove('active');
+    }
+
+    let targetSrc = '';
+    if (currentAvatarUrl) {
+        const isUrlValidForGender = storeItems.some(item => item.modelUrl === currentAvatarUrl && item.type === gender);
+        targetSrc = isUrlValidForGender ? currentAvatarUrl : (gender === 'female' ? DEFAULT_FEMALE_AVATAR : DEFAULT_MALE_AVATAR);
+    } else {
+        targetSrc = (gender === 'female') ? DEFAULT_FEMALE_AVATAR : DEFAULT_MALE_AVATAR;
+    }
+    avatar.src = targetSrc;
+}
+
+window.buyItem = async function(itemId, cost) {
+    if(currentXP >= cost) {
+        const newXP = currentXP - cost;
+        
+        const newOwnedItems = [...ownedItems, itemId];
+        
+        const success = await updateBackendProfile({ 
+            xp: newXP,
+            ownedAvatars: newOwnedItems
+        });
+        
+        if (success) {
+            
+            currentXP = newXP;
+            ownedItems = newOwnedItems;
+            
+            console.log('✅ Item purchased and saved to Firestore:', itemId);
+            await saveProfileData(); 
+            updateXPUI();
+            renderStore();
+        } else {
+            alert('Failed to purchase item. Please try again.');
+        }
+    } else {
+        alert("You need more XP!");
+    }
+}
+
+window.equipAvatar = async function(modelUrl) {
+    currentAvatarUrl = modelUrl;
+    
+    const success = await updateBackendProfile({ 
+        currentAvatar: modelUrl 
+    });
+    
+    if (success) {
+        console.log('✅ Avatar equipped and saved to Firestore:', modelUrl);
+        await saveProfileData(); 
+        refreshProfileUI();
+        renderStore();
+    } else {
+        alert('Failed to save avatar. Please try again.');
+    }
+}
+
+function setGender(newGender) {
+    if (gender !== newGender) {
+        gender = newGender;
+        currentAvatarUrl = null; 
+    }
+    
+    updateBackendProfile({ 
+        profileGender: gender,
+        currentAvatar: null 
+    }).then(success => {
+        if (success) {
+            console.log('✅ Gender saved to Firestore:', gender);
+            saveProfileData(); 
+            refreshProfileUI();
+            renderStore();
+        } else {
+            alert('Failed to save gender. Please try again.');
+        }
+    });
+}
+
+function goBackHome() {
+    window.location.href = '/student';  
+}
+window.goBackHome = goBackHome;
+
+editBtn.onclick = () => {
+    inputName.value = displayName.textContent;
+    inputDOB.value = displayDOB.textContent !== '--' ? displayDOB.textContent : '';
+  
+    genderBox.classList.remove('gender-disabled');
+    displayName.classList.add('hidden');
+    inputName.classList.remove('hidden');
+    displayDOB.classList.add('hidden');
+    inputDOB.classList.remove('hidden');
+    editBtn.classList.add('hidden');
+    saveBtn.classList.remove('hidden');
+};
+
+saveBtn.onclick = async () => {
+    const newName = inputName.value || displayName.textContent;
+    const newDOB = inputDOB.value || '--';
+  
+    const success = await updateBackendProfile({ 
+        name: newName,
+        dob: newDOB,
+        profileGender: gender  
+    });
+    
+    if (success) {
+        displayName.textContent = newName;
+        displayDOB.textContent = newDOB;
+        headerName.textContent = newName;
+        userData.name = newName;
+        userData.dob = newDOB;
+    } else {
+        alert('Failed to save changes. Please try again.');
+    }
+  
+    genderBox.classList.add('gender-disabled');
+    displayName.classList.remove('hidden');
+    inputName.classList.add('hidden');
+    displayDOB.classList.remove('hidden');
+    inputDOB.classList.add('hidden');
+    editBtn.classList.remove('hidden');
+    saveBtn.classList.add('hidden');
+};
+
+femaleBtn.onclick = () => setGender('female');
+maleBtn.onclick = () => setGender('male');
+
+function formatDate(timestamp) {
+    if (!timestamp) return '--';
+    
+    let date;
+    if (timestamp._seconds) {
+        date = new Date(timestamp._seconds * 1000);
+    } else if (timestamp.toDate) {
+        date = timestamp.toDate();
+    } else {
+        date = new Date(timestamp);
+    }
+    
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+}
+
+async function init() {
+    if (!checkAuth()) return;
+    
+    userData = await fetchUserProfile();
+    
+    if (!userData) return;
+    
+    console.log('📥 Loaded user data from Firestore:', userData);
+    
+    displayName.textContent = userData.name || 'Student';
+    displayEmail.textContent = userData.email || '--';
+    displayRoll.textContent = userData.roll_number || '--';
+    displayRole.textContent = userData.role || 'student';
+    displayDOB.textContent = userData.dob || '--';
+    headerName.textContent = userData.name || 'Student';
+    
+    currentXP = userData.xp || 0;
+    
+    loadProfileData();
+    
+    console.log('🎨 Current avatar settings:', {
+        gender,
+        currentAvatarUrl,
+        ownedItems
+    });
+    
+    updateXPUI();
+    refreshProfileUI();
+    renderStore();
+    
+   
+    quizHistory.innerHTML = '<p class="text-gray-500 text-center py-4">No quiz attempts yet. Start learning!</p>';
+}
+
+
+init();
+</script>
+</body>
+</html>

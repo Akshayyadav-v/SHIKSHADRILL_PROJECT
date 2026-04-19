@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShikshaDrill - Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;500;600&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #6366f1);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px) scale(1.02)
+        }
+
+        .selected-option {
+            background: linear-gradient(135deg, #10B981, #059669) !important;
+            color: #fff !important;
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(16, 185, 129, .2);
+        }
+
+        .opt-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .xp-popup {
+            position: fixed;
+            left: 50%;
+            top: 40%;
+            transform: translateX(-50%);
+            color: #FBBF24;
+            font-weight: 800;
+            font-size: 22px;
+            animation: floatUp 1s ease-in-out forwards;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0)
+            }
+
+            to {
+                opacity: 0;
+                transform: translate(-50%, -60px)
+            }
+        }
+
+        .heart-beat {
+            animation: heart-beat 1.5s ease-in-out infinite
+        }
+
+        @keyframes heart-beat {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.08)
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="max-w-3xl w-full bg-white rounded-2xl shadow-2xl overflow-hidden">
+
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-3 text-white flex-shrink-0">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">🎓</span>
+                        </div>
+                        <h1 class="game-title text-lg text-white">ShikshaDrill</h1>
+                    </div>
+                    <div
+                        class="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full font-bold text-xs flex items-center space-x-1">
+                        <span>🪙</span><span id="xp">1,250</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <select id="lang"
+                        class="bg-white bg-opacity-20 text-white px-2 py-1 rounded-lg font-semibold text-xs border border-white border-opacity-30 focus:outline-none"
+                        onchange="changeLang()">
+                        <option value="en" class="text-gray-800">🇺🇸 EN</option>
+                        <option value="hi" class="text-gray-800">🇮🇳 हिं</option>
+                        <option value="od" class="text-gray-800">🇮🇳 ଓଡ଼</option>
+                    </select>
+                    <div class="flex space-x-1">
+                        <span class="heart-beat text-lg">❤️</span>
+                        <span class="heart-beat text-lg" style="animation-delay: 0.3s;">❤️</span>
+                        <span class="heart-beat text-lg" style="animation-delay: 0.6s;">❤️</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bars -->
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="flex items-center space-x-1"><span>⏰</span><span id="timeLabel">Time</span></span>
+                    <span class="font-bold" id="timer">02:45</span>
+                </div>
+                <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-yellow-400 to-orange-400 h-2 rounded-full transition-all duration-1000"
+                        style="width: 100%" id="timeBar"></div>
+                </div>
+                <div class="flex justify-between items-center text-xs">
+                    <span class="flex items-center space-x-1"><span>📊</span><span id="progLabel">Progress</span></span>
+                    <span class="font-bold" id="progressText">0/0</span>
+                </div>
+                <div class="w-full bg-white bg-opacity-30 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-green-400 to-blue-400 h-2 rounded-full transition-all duration-500"
+                        style="width: 0%" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question -->
+        <div class="flex-1 px-4 py-4 flex flex-col overflow-y-auto">
+            <div
+                class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-4 border-2 border-blue-200 flex-shrink-0">
+                <div class="flex items-center justify-between mb-3">
+                    <div
+                        class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                        <span id="qNum">Q1</span> 🎯
+                    </div>
+                    <div class="text-gray-500 text-xs font-semibold" id="qOf">of 0</div>
+                </div>
+                <h2 class="text-base font-bold text-gray-800 leading-relaxed mb-3" id="question">Loading question...
+                </h2>
+                <div class="flex space-x-2">
+                    <button
+                        class="bg-gradient-to-r from-green-400 to-green-500 text-white px-3 py-2 rounded-full font-semibold text-xs shadow-lg hover:from-green-500 hover:to-green-600 transform hover:scale-105 transition-all duration-200 flex items-center space-x-1"
+                        onclick="listen()" id="listenBtn">
+                        <span>🔊</span><span id="listenTxt">Listen</span>
+                    </button>
+                    <button
+                        class="bg-gradient-to-r from-pink-400 to-pink-500 text-white px-3 py-2 rounded-full font-semibold text-xs shadow-lg hover:from-pink-500 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 flex items-center space-x-1"
+                        onclick="voice()" id="voiceBtn">
+                        <span>🎙️</span><span id="voiceTxt">Voice</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Options Grid -->
+            <div class="grid grid-cols-2 gap-3 mb-4 flex-1">
+                <button
+                    class="option-card h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg p-3 flex flex-col justify-center"
+                    onclick="select(this, 'A')" data-answer="Option A" id="btnA">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center font-bold text-xs">
+                            A</div>
+                        <span class="font-semibold text-sm" id="optA">Loading...</span>
+                    </div>
+                </button>
+                <button
+                    class="option-card h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg p-3 flex flex-col justify-center"
+                    onclick="select(this, 'B')" data-answer="Option B" id="btnB">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center font-bold text-xs">
+                            B</div>
+                        <span class="font-semibold text-sm" id="optB">Loading...</span>
+                    </div>
+                </button>
+                <button
+                    class="option-card h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg p-3 flex flex-col justify-center"
+                    onclick="select(this, 'C')" data-answer="Option C" id="btnC">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center font-bold text-xs">
+                            C</div>
+                        <span class="font-semibold text-sm" id="optC">Loading...</span>
+                    </div>
+                </button>
+                <button
+                    class="option-card h-20 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl transition-all duration-200 shadow-lg p-3 flex flex-col justify-center"
+                    onclick="select(this, 'D')" data-answer="Option D" id="btnD">
+                    <div class="flex items-center space-x-2">
+                        <div
+                            class="w-6 h-6 bg-white bg-opacity-30 rounded-full flex items-center justify-center font-bold text-xs">
+                            D</div>
+                        <span class="font-semibold text-sm" id="optD">Loading...</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Next Button -->
+        <div class="px-4 pb-4 flex-shrink-0">
+            <button
+                class="pulse-glow w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-2xl hover:from-green-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                id="nextBtn" disabled onclick="next()">
+                <span id="nextTxt">Next Question</span><span class="text-xl">🚀</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Voice Status -->
+    <div id="voiceStatus"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-80 text-white px-6 py-4 rounded-2xl text-center z-50 hidden">
+        <div class="text-3xl mb-2">🎙️</div>
+        <div class="font-bold text-base" id="listening">Listening...</div>
+        <div class="text-sm opacity-80" id="speakClear">Say your answer clearly</div>
+    </div>
+
+    <script>
+        let selectedAnswer = null,
+            timeLeft = 165,
+            currentXP = 1250,
+            recognition = null,
+            isListening = false,
+            currentLang = 'en',
+            quizData = null,
+            currentQuestionIndex = 0,
+            totalQuestions = 0,
+            correctAnswers = 0;
+
+        const t = {
+            en: {
+                timeLabel: "Time",
+                progLabel: "Progress",
+                listenTxt: "Listen",
+                voiceTxt: "Voice",
+                nextTxt: "Next Question",
+                listening: "Listening...",
+                speakClear: "Say your answer clearly",
+                welcome: "Welcome to ShikshaDrill! Ready?",
+                correct: "Excellent! Plus 50 XP!",
+                selected: "You selected",
+                perfect: "Perfect! Answer selected!",
+                tryAgain: "Try saying the option letter",
+                voiceFail: "Voice failed. Try again!",
+                audioFail: "Audio not supported",
+                voiceNotSupported: "Voice not supported",
+                quizComplete: "Quiz Complete! Great job!",
+                incorrectAnswer: "Incorrect! Better luck next time!",
+                of: "of",
+                score: "Score",
+                greatJob: "Great Job!",
+                youScored: "You scored",
+                correctOut: "correct out of",
+                xpEarned: "XP Earned!",
+                backToQuizzes: "Back to Quizzes",
+                correctAnswer: "Correct!",
+                incorrectMsg: "Incorrect",
+                playing: "Playing...",
+                youSaid: "You said:"
+            },
+            hi: {
+                timeLabel: "समय",
+                progLabel: "प्रगति",
+                listenTxt: "सुनें",
+                voiceTxt: "आवाज़",
+                nextTxt: "अगला प्रश्न",
+                listening: "सुन रहे हैं...",
+                speakClear: "अपना उत्तर स्पष्ट बोलें",
+                welcome: "शिक्षाड्रिल में आपका स्वागत है! तैयार हैं?",
+                correct: "बढ़िया! +50 XP!",
+                selected: "आपने चुना",
+                perfect: "बिल्कुल सही! उत्तर चुना गया!",
+                tryAgain: "विकल्प का अक्षर बोलने का प्रयास करें",
+                voiceFail: "आवाज़ विफल। पुनः प्रयास करें!",
+                audioFail: "ऑडियो समर्थित नहीं",
+                voiceNotSupported: "आवाज़ समर्थित नहीं",
+                quizComplete: "क्विज़ पूर्ण! बढ़िया काम!",
+                incorrectAnswer: "गलत! अगली बार भाग्य अच्छा रहे!",
+                of: "में से",
+                score: "स्कोर",
+                greatJob: "बहुत बढ़िया!",
+                youScored: "आपका स्कोर",
+                correctOut: "सही उत्तर कुल",
+                xpEarned: "XP अर्जित!",
+                backToQuizzes: "क्विज़ पर वापस",
+                correctAnswer: "सही!",
+                incorrectMsg: "गलत",
+                playing: "चल रहा है...",
+                youSaid: "आपने कहा:"
+            },
+            od: {
+                timeLabel: "ସମୟ",
+                progLabel: "ପ୍ରଗତି",
+                listenTxt: "ଶୁଣନ୍ତୁ",
+                voiceTxt: "ସ୍ୱର",
+                nextTxt: "ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ",
+                listening: "ଶୁଣୁଛି...",
+                speakClear: "ଆପଣଙ୍କ ଉତ୍ତର ସ୍ପଷ୍ଟ ଭାବରେ କୁହନ୍ତୁ",
+                welcome: "ଶିକ୍ଷାଡ୍ରିଲକୁ ସ୍ୱାଗତ! ପ୍ରସ୍ତୁତ?",
+                correct: "ଉତ୍କୃଷ୍ଟ! +50 XP!",
+                selected: "ଆପଣ ବାଛିଲେ",
+                perfect: "ସମ୍ପୂର୍ଣ୍ଣ! ଉତ୍ତର ବାଛି ନିଆଗଲା!",
+                tryAgain: "ବିକଳ୍ପ ଅକ୍ଷର କହିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ",
+                voiceFail: "ସ୍ୱର ବିଫଳ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ!",
+                audioFail: "ଅଡିଓ ସମର୍ଥିତ ନୁହେଁ",
+                voiceNotSupported: "ସ୍ୱର ସମର୍ଥିତ ନୁହେଁ",
+                quizComplete: "କୁଇଜ୍ ସମାପ୍ତ! ବହୁତ ଭଲ!",
+                incorrectAnswer: "ଭୁଲ! ପରବର୍ତ୍ତୀ ଥର ଭାଗ୍ୟ!",
+                of: "ର",
+                score: "ସ୍କୋର",
+                greatJob: "ବହୁତ ଭଲ!",
+                youScored: "ଆପଣଙ୍କ ସ୍କୋର",
+                correctOut: "ସଠିକ୍ ଉତ୍ତର ମୋଟ",
+                xpEarned: "XP ଅର୍ଜିତ!",
+                backToQuizzes: "କୁଇଜକୁ ଫେରନ୍ତୁ",
+                correctAnswer: "ଠିକ୍!",
+                incorrectMsg: "ଭୁଲ",
+                playing: "ଚାଲୁଛି...",
+                youSaid: "ଆପଣ କହିଲେ:"
+            }
+        };
+
+        // Fetch quiz and initialize
+        async function initQuiz() {
+            // Check authentication first
+            const token = localStorage.getItem('idToken');
+            if (!token) {
+                window.location.href = '/signup';
+                return;
+            }
+
+            try {
+                // Verify token
+                const authRes = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!authRes.ok) {
+                    localStorage.removeItem('idToken');
+                    window.location.href = '/signup';
+                    return;
+                }
+
+
+                // Get quiz ID from URL
+                const params = new URLSearchParams(window.location.search);
+                const quizId = params.get("id");
+
+                if (!quizId) {
+                    alert("No quiz ID provided!");
+                    window.location.href = '/student_quizzes';
+                    return;
+                }
+
+                // Fetch quiz data
+                const quizRes = await fetch(`/get_quiz?id=${quizId}`);
+
+                if (!quizRes.ok) {
+                    alert("Quiz not found!");
+                    window.location.href = '/student_quizzes';
+                    return;
+                }
+
+                quizData = await quizRes.json();
+                console.log("Loaded quiz:", quizData);
+
+                if (!quizData || !quizData.questions || quizData.questions.length === 0) {
+                    alert("This quiz has no questions!");
+                    window.location.href = '/student_quizzes';
+                    return;
+                }
+
+                totalQuestions = quizData.questions.length;
+
+                // Initialize speech and display first question
+                initSpeech();
+                displayQuestion(0);
+                setTimeout(() => speak(t[currentLang].welcome), 1000);
+
+            } catch (err) {
+                console.error("Error loading quiz:", err);
+                alert("Error loading quiz!");
+                window.location.href = '/student_quizzes';
+            }
+        }
+        async function loadStudentXP() {
+            try {
+                const token = localStorage.getItem('idToken');
+                const res = await fetch('/get_student_xp', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+                currentXP = data.xp || 0;
+                document.getElementById('xp').textContent = currentXP.toLocaleString();
+                console.log('Loaded student XP:', currentXP);
+            } catch (err) {
+                console.error('Failed to load XP:', err);
+                currentXP = 0;
+            }
+        }
+
+        // Display a question
+        async function displayQuestion(index) {
+            if (!quizData || index >= quizData.questions.length) {
+                // Quiz complete
+                showQuizComplete();
+                return;
+            }
+
+            const question = quizData.questions[index];
+            currentQuestionIndex = index;
+            selectedAnswer = null;
+
+            // Update question number
+            document.getElementById('qNum').textContent = `Q${index + 1}`;
+            document.getElementById('qOf').textContent = `${t[currentLang].of} ${totalQuestions}`;
+
+            // Update progress
+            const progressPercent = ((index) / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `${index}/${totalQuestions}`;
+
+            // Translate question text if needed
+            const questionText = question.text || 'Question text missing';
+            const translatedQuestion = await translateText(questionText, currentLang);
+            document.getElementById('question').textContent = translatedQuestion;
+
+            // Update options with translation
+            const options = ['A', 'B', 'C', 'D'];
+            for (const opt of options) {
+                const optText = question.options[opt] || '';
+                const optEl = document.getElementById(`opt${opt}`);
+                const btnEl = document.getElementById(`btn${opt}`);
+
+                if (optText) {
+                    const translatedOption = await translateText(optText, currentLang);
+                    optEl.textContent = translatedOption;
+                    btnEl.style.display = 'flex';
+                    btnEl.setAttribute('data-answer', translatedOption);
+                } else {
+                    btnEl.style.display = 'none';
+                }
+            }
+
+            // Reset button states
+            document.querySelectorAll('.option-card').forEach(b => {
+                b.classList.remove('selected-option');
+                b.disabled = false;
+            });
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.innerHTML = `<span id="nextTxt">${t[currentLang].nextTxt}</span><span class="text-xl">🚀</span>`;
+            nextBtn.classList.remove('from-yellow-400', 'to-orange-400', 'from-red-400', 'to-red-500');
+            nextBtn.classList.add('from-green-500', 'to-blue-500');
+        }
+
+        async function showQuizComplete() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+
+            // Calculate XP based on performance
+            const baseXP = 50;
+            const bonusXP = Math.round((percentage / 100) * 50);
+            const totalXPEarned = baseXP + bonusXP;
+
+            // Submit attempt to backend
+            await submitQuizAttempt(correctAnswers, totalQuestions);
+
+            // Update student XP
+            await updateStudentXP(totalXPEarned);
+
+            document.getElementById('question').textContent = t[currentLang].quizComplete;
+            document.getElementById('qNum').textContent = t[currentLang].score;
+            document.getElementById('qOf').textContent = `${correctAnswers}/${totalQuestions}`;
+
+            document.querySelector('.grid.grid-cols-2').innerHTML = `
+        <div class="col-span-2 bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-xl p-6 text-center">
+            <div class="text-6xl mb-4">🏆</div>
+            <h3 class="text-2xl font-bold mb-2">${t[currentLang].greatJob}</h3>
+            <p class="text-lg mb-2">${t[currentLang].youScored} ${percentage}%</p>
+            <p class="text-sm opacity-90 mb-4">${correctAnswers} ${t[currentLang].correctOut} ${totalQuestions}</p>
+            <div class="bg-white bg-opacity-20 rounded-lg p-3 mb-2">
+                <p class="text-xl font-bold">+${totalXPEarned} ${t[currentLang].xpEarned} 🪙</p>
+            </div>
+        </div>
+    `;
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.innerHTML = `<span>${t[currentLang].backToQuizzes}</span><span class="text-xl">📚</span>`;
+            nextBtn.disabled = false;
+            nextBtn.onclick = () => window.location.href = '/level';
+
+            speak(t[currentLang].quizComplete);
+        }
+
+        async function updateStudentXP(xpEarned) {
+            try {
+                const token = localStorage.getItem('idToken');
+                const res = await fetch('/update_student_xp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        xp: xpEarned
+                    })
+                });
+
+                const data = await res.json();
+                console.log('XP updated:', data);
+
+                if (data.success) {
+                    // Update the XP display
+                    currentXP = data.new_xp;
+                    document.getElementById('xp').textContent = currentXP.toLocaleString();
+                    return data.new_xp; // ✅ Return the new total XP
+                }
+
+                return currentXP; // Return current if update failed
+            } catch (err) {
+                console.error('Failed to update XP:', err);
+                return currentXP;
+            }
+        }
+
+        function initSpeech() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+
+                // Set language based on current selection
+                if (currentLang === 'hi') {
+                    recognition.lang = 'hi-IN';
+                } else if (currentLang === 'od') {
+                    recognition.lang = 'or-IN';
+                } else {
+                    recognition.lang = 'en-US';
+                }
+
+                recognition.onresult = (e) => handleVoice(e.results[0][0].transcript.toLowerCase());
+                recognition.onerror = () => { hideVoice(); showMsg('🎙️ ' + t[currentLang].voiceFail, 'error'); };
+                recognition.onend = () => { isListening = false; hideVoice(); };
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const u = new SpeechSynthesisUtterance(text);
+                u.rate = 0.7;
+
+                // Set language based on current selection
+                if (currentLang === 'hi') {
+                    u.lang = 'hi-IN';
+                } else if (currentLang === 'od') {
+                    u.lang = 'or-IN';
+                } else {
+                    u.lang = 'en-US';
+                }
+
+                speechSynthesis.speak(u);
+                return u;
+            }
+            return null;
+        }
+
+        async function translateText(text, targetLang) {
+            // If target is English, return original
+            if (targetLang === 'en') return text;
+
+            try {
+                // Using MyMemory Translation API (free, no API key needed)
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang === 'hi' ? 'hi' : 'or'}`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (data.responseData && data.responseData.translatedText) {
+                    return data.responseData.translatedText;
+                }
+
+                // If translation fails, return original
+                return text;
+            } catch (err) {
+                console.error('Translation error:', err);
+                return text;
+            }
+        }
+
+        function changeLang() {
+            currentLang = document.getElementById('lang').value;
+
+            // Update all UI labels with new language
+            document.getElementById('timeLabel').textContent = t[currentLang].timeLabel;
+            document.getElementById('progLabel').textContent = t[currentLang].progLabel;
+            document.getElementById('listenTxt').textContent = t[currentLang].listenTxt;
+            document.getElementById('voiceTxt').textContent = t[currentLang].voiceTxt;
+            document.getElementById('listening').textContent = t[currentLang].listening;
+            document.getElementById('speakClear').textContent = t[currentLang].speakClear;
+
+            // Update button text if currently showing next question
+            const nextBtn = document.getElementById('nextBtn');
+            const nextTxtSpan = document.getElementById('nextTxt');
+            if (nextTxtSpan && nextTxtSpan.textContent !== 'Correct!' && nextTxtSpan.textContent !== 'Incorrect') {
+                nextTxtSpan.textContent = t[currentLang].nextTxt;
+            }
+
+            // Update speech recognition language
+            if (recognition) {
+                if (currentLang === 'hi') {
+                    recognition.lang = 'hi-IN';
+                } else if (currentLang === 'od') {
+                    recognition.lang = 'or-IN';
+                } else {
+                    recognition.lang = 'en-US';
+                }
+            }
+
+            // ✅ ADD THIS: Retranslate current question
+            if (quizData && currentQuestionIndex < quizData.questions.length) {
+                displayQuestion(currentQuestionIndex);
+            }
+
+            showMsg('🌐 Language changed!', 'success');
+        }
+
+        function select(el, opt) {
+            document.querySelectorAll('.option-card').forEach(b => b.classList.remove('selected-option'));
+            el.classList.add('selected-option');
+            selectedAnswer = opt;
+            document.getElementById('nextBtn').disabled = false;
+            speak(`${t[currentLang].selected} ${el.getAttribute('data-answer')}`);
+        }
+
+        function next() {
+            if (!selectedAnswer || !quizData) return;
+
+            const currentQuestion = quizData.questions[currentQuestionIndex];
+            const isCorrect = selectedAnswer === currentQuestion.correct;
+
+            const btn = document.getElementById('nextBtn');
+
+            // Disable all option buttons
+            document.querySelectorAll('.option-card').forEach(b => b.disabled = true);
+
+            if (isCorrect) {
+                btn.innerHTML = '<span>Correct! 🎉</span><span class="text-xl">⭐</span>';
+                btn.classList.remove('from-green-500', 'to-blue-500');
+                btn.classList.add('from-yellow-400', 'to-orange-400');
+                currentXP += 50;
+                correctAnswers++;
+                document.getElementById('xp').textContent = currentXP.toLocaleString();
+                speak(t[currentLang].correct);
+                showXP(50);
+            } else {
+                btn.innerHTML = '<span>Incorrect 😔</span><span class="text-xl">❌</span>';
+                btn.classList.remove('from-green-500', 'to-blue-500');
+                btn.classList.add('from-red-400', 'to-red-500');
+                speak(t[currentLang].incorrectAnswer);
+            }
+
+            btn.disabled = true;
+
+            setTimeout(() => {
+                displayQuestion(currentQuestionIndex + 1);
+            }, 2000);
+        }
+
+        function listen() {
+            const btn = document.getElementById('listenBtn');
+            const orig = btn.innerHTML;
+            btn.innerHTML = `<span>🔊</span><span>${t[currentLang].playing}</span>`;
+            btn.classList.add('animate-pulse');
+            btn.disabled = true;
+
+            const u = speak(document.getElementById('question').textContent);
+            if (u) {
+                u.onend = () => { btn.innerHTML = orig; btn.classList.remove('animate-pulse'); btn.disabled = false; };
+            } else {
+                setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('animate-pulse'); btn.disabled = false; showMsg('🔊 ' + t[currentLang].audioFail, 'error'); }, 2000);
+            }
+        }
+
+        function voice() {
+            if (!recognition) { showMsg('🎙️ ' + t[currentLang].voiceNotSupported, 'error'); return; }
+            if (isListening) { recognition.stop(); return; }
+
+            const btn = document.getElementById('voiceBtn');
+            btn.innerHTML = '<span>🎙️</span><span>Listening...</span>';
+            btn.classList.add('recording-pulse');
+            showVoice();
+            isListening = true;
+
+            try { recognition.start(); } catch (e) {
+                hideVoice(); isListening = false;
+                btn.innerHTML = '<span>🎙️</span><span>' + t[currentLang].voiceTxt + '</span>';
+                btn.classList.remove('recording-pulse');
+            }
+        }
+
+        function handleVoice(transcript) {
+            const voiceBtn = document.getElementById('voiceBtn');
+            voiceBtn.innerHTML = '<span>🎙️</span><span>' + t[currentLang].voiceTxt + '</span>';
+            voiceBtn.classList.remove('recording-pulse');
+            showMsg(`🎙️ ${t[currentLang].youSaid} "${transcript}"`, 'success');
+
+            let matched = null;
+            const clean = transcript.toLowerCase().trim();
+
+            // Try to match option by letter
+            if (clean === 'a' || clean.includes('option a')) matched = 'A';
+            else if (clean === 'b' || clean.includes('option b')) matched = 'B';
+            else if (clean === 'c' || clean.includes('option c')) matched = 'C';
+            else if (clean === 'd' || clean.includes('option d')) matched = 'D';
+
+            // Try to match by option text
+            if (!matched && quizData) {
+                const currentQuestion = quizData.questions[currentQuestionIndex];
+                ['A', 'B', 'C', 'D'].forEach(opt => {
+                    const optText = currentQuestion.options[opt];
+                    if (optText && clean.includes(optText.toLowerCase())) {
+                        matched = opt;
+                    }
+                });
+            }
+
+            if (matched) {
+                const optionBtn = document.getElementById(`btn${matched}`);
+                if (optionBtn && optionBtn.style.display !== 'none') {
+                    setTimeout(() => {
+                        select(optionBtn, matched);
+                        speak(t[currentLang].perfect);
+                        showMsg(`✅ ${t[currentLang].perfect}`, 'success');
+                    }, 500);
+                }
+            } else {
+                speak(t[currentLang].tryAgain);
+                showMsg(`❌ ${t[currentLang].tryAgain}`, 'error');
+            }
+        }
+
+        function showVoice() { document.getElementById('voiceStatus').classList.remove('hidden'); }
+        function hideVoice() { document.getElementById('voiceStatus').classList.add('hidden'); }
+
+        function showXP(pts) {
+            const div = document.createElement('div');
+            div.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl font-bold text-yellow-400 animate-bounce z-50 pointer-events-none';
+            div.textContent = `+${pts} XP! 🪙`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        function showMsg(msg, type) {
+            const div = document.createElement('div');
+            const bg = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            div.className = `fixed bottom-24 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl text-white font-semibold z-50 text-sm ${bg}`;
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        function updateTimer() {
+            const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+            document.getElementById('timer').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            document.getElementById('timeBar').style.width = (timeLeft / 165) * 100 + '%';
+            if (timeLeft < 30) document.getElementById('timeBar').className = 'bg-gradient-to-r from-red-400 to-orange-400 h-2 rounded-full transition-all duration-1000 animate-pulse';
+            if (timeLeft > 0) timeLeft--;
+            else {
+                clearInterval(timerInterval);
+                speak('Time up! Keep learning!');
+                showMsg('⏰ Time up! Keep learning! 💪', 'error');
+                setTimeout(() => showQuizComplete(), 2000);
+            }
+        }
+
+        const timerInterval = setInterval(updateTimer, 1000);
+
+        // Single entry point
+        window.onload = initQuiz;
+
+        async function submitQuizAttempt(score, totalQuestions) {
+            try {
+                const token = localStorage.getItem('idToken');
+                const params = new URLSearchParams(window.location.search);
+                const quizId = params.get("id");
+
+                const res = await fetch('/submit_quiz_attempt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        quiz_id: quizId,
+                        score: score,
+                        total_questions: totalQuestions
+                    })
+                });
+
+                const data = await res.json();
+                console.log('Attempt recorded:', data);
+            } catch (err) {
+                console.error('Failed to record attempt:', err);
+            }
+        }
+
+        // Update showQuizComplete function to submit attempt
+        async function showQuizComplete() {
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+
+            // Calculate XP based on performance
+            const baseXP = 50;
+            const bonusXP = Math.round((percentage / 100) * 50);
+            const totalXPEarned = baseXP + bonusXP;
+
+            // Submit attempt to backend
+            await submitQuizAttempt(correctAnswers, totalQuestions);
+
+            // Update student XP
+            const updatedXP = await updateStudentXP(totalXPEarned);
+
+            // Calculate time taken
+            const timeTakenSeconds = 165 - timeLeft; // 165 is starting time
+            const minutes = Math.floor(timeTakenSeconds / 60);
+            const seconds = timeTakenSeconds % 60;
+            const timeString = `${minutes}m ${seconds}s`;
+
+            // Get student name from profile
+            const token = localStorage.getItem('idToken');
+            let studentName = "Student";
+            try {
+                const res = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    studentName = data.profile.name || "Student";
+                }
+            } catch (err) {
+                console.error('Failed to get student name:', err);
+            }
+
+            // Get quiz level
+            const quizLevel = quizData.level || 'medium';
+
+            // Redirect to result page with data
+            const resultUrl = `/quiz_result?` +
+                `correct=${correctAnswers}&` +
+                `total=${totalQuestions}&` +
+                `time=${encodeURIComponent(timeString)}&` +
+                `name=${encodeURIComponent(studentName)}&` +
+                `level=${quizLevel}&` +
+                `xp=${totalXPEarned}&` +
+                `totalXP=${updatedXP || currentXP}`;
+
+            console.log('Redirecting to result page:', resultUrl);
+
+            // Wait a moment before redirecting
+            setTimeout(() => {
+                window.location.href = resultUrl;
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

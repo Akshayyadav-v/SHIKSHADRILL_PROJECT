@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShikshaDrill</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #f0f4ff);
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      background: linear-gradient(135deg, #155dfe, #9810fa, #4f39f6);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
+      flex-wrap: wrap;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+
+    header p {
+      font-size: 13px;
+      color: #dbeafe;
+      margin-top: 2px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: white;
+    }
+
+    .header-right:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-right span {
+      font-size: 16px;
+    }
+
+    .header-emoji {
+      font-size: 28px;
+    }
+
+    /* Avatar in header */
+    .header-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+      overflow: hidden;
+      border: 3px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      --poster-color: transparent;
+    }
+    
+
+
+    .profile-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .profile-badge {
+      background: rgba(255, 215, 0, 0.3);
+      color: #ffd700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ===== SLIDER ===== */
+    .slider {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      height: 300px;
+      margin: 40px auto;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .slides {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 1s ease-in-out;
+    }
+
+    .slide {
+      min-width: 100%;
+      height: 100%;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(1.1) contrast(1.05);
+    }
+
+    .nav {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 10px;
+    }
+
+    .nav button {
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: 50%;
+      transition: background 0.3s;
+    }
+
+    .nav button:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    /* ===== SUBJECT CARDS ===== */
+    .subjects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      padding: 40px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      padding: 40px 25px;
+      border-radius: 20px;
+      text-align: center;
+      color: white;
+      text-decoration: none;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .card .logo {
+      font-size: 46px;
+      margin-bottom: 15px;
+      display: inline-block;
+      transition: transform 0.4s ease;
+    }
+
+    .card:hover .logo {
+      transform: translateY(-6px) scale(1.2);
+    }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      font-size: 14px;
+    }
+
+    .science {
+      background: linear-gradient(135deg, #3786cc, #00f2fe);
+    }
+
+    .technology {
+      background: linear-gradient(135deg, #31c161, #38f9d7);
+    }
+
+    .engineering {
+      background: linear-gradient(135deg, #e95682, #fee140);
+    }
+
+    .mathematics {
+      background: linear-gradient(135deg, #a37ff7, #ffb6ea);
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: linear-gradient(135deg, #155dfe, #9810fa, #4f39f6);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      border-radius: 20px 20px 0 0;
+      margin-top: 40px;
+    }
+
+    @media(max-width:600px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+      }
+
+      .slider {
+        height: 220px;
+      }
+
+      .header-avatar {
+        width: 45px;
+        height: 45px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-left">
+      <span class="header-emoji">🎓</span>
+      <div>
+        <h1>ShikshaDrill</h1>
+        <p>Welcome Student</p>
+      </div>
+    </div>
+    
+    <!-- Enhanced Profile Section with Avatar -->
+    <a href="/student_profile" class="header-right" id="profileLink">
+      <div class="header-avatar">
+        <model-viewer 
+          id="headerAvatar" 
+          disable-zoom 
+          disable-pan
+          interaction-prompt="none"
+          field-of-view="35deg"
+          camera-orbit="0deg 75deg 1.2m"
+          camera-target="0m 1.4m 0m"
+          min-camera-orbit="0deg 75deg 1.2m"
+          max-camera-orbit="0deg 75deg 1.2m"
+          style="width:100%; height:100%;"
+          alt="Profile Avatar">
+        </model-viewer>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-start;">
+        <span id="UserName" class="profile-name">Loading...</span>
+        <span class="profile-badge" id="xpBadge">0 XP</span>
+      </div>
+    </a>
+  </header>
+
+  
+  <div class="slider">
+    <div class="slides" id="slides">
+      <div class="slide"><img src="static/book1.jpg" alt="English Banner" /></div>
+      <div class="slide"><img src="static/book2.jpg" alt="Hindi Banner" /></div>
+      <div class="slide"><img src="static/book3.jpg" alt="Odia Banner" /></div>
+    </div>
+    <div class="nav">
+      <button id="prev">&#10094;</button>
+      <button id="next">&#10095;</button>
+    </div>
+  </div>
+
+  
+  <section class="subjects">
+    <a href="#" onclick="goToExplore('science')" class="card science">
+      <span class="logo">🔬</span>
+      <h3>Science</h3>
+      <p>Learn Physics, Chemistry, and Biology with fun experiments and notes.</p>
+    </a>
+    <a href="#" onclick="goToExplore('technology')" class="card technology">
+      <span class="logo">💻</span>
+      <h3>Technology</h3>
+      <p>Dive into Computers, Coding, AI, and the latest tech trends.</p>
+    </a>
+    <a href="#" onclick="goToExplore('engineering')" class="card engineering">
+      <span class="logo">⚙️</span>
+      <h3>Engineering</h3>
+      <p>Explore practical problem-solving, design, and innovation.</p>
+    </a>
+    <a href="#" onclick="goToExplore('mathematics')" class="card mathematics">
+      <span class="logo">📐</span>
+      <h3>Mathematics</h3>
+      <p>Master concepts with easy explanations and practice problems.</p>
+    </a>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2025 ShikshaDrill | Shiksha Har Gaon Tak</p>
+  </footer>
+
+  
+  <script>
+    const slides = document.getElementById('slides');
+    const totalSlides = document.querySelectorAll('.slide').length;
+    let index = 0;
+
+    function showSlide() {
+      slides.style.transform = `translateX(${-index * 100}%)`;
+    }
+
+    document.getElementById('next').addEventListener('click', () => {
+      index = (index + 1) % totalSlides;
+      showSlide();
+    });
+
+    document.getElementById('prev').addEventListener('click', () => {
+      index = (index - 1 + totalSlides) % totalSlides;
+      showSlide();
+    });
+
+    setInterval(() => {
+      index = (index + 1) % totalSlides;
+      showSlide();
+    }, 3000);
+
+    
+    const DEFAULT_FEMALE_AVATAR = '/static/models/female_avatar.glb';
+    const DEFAULT_MALE_AVATAR = '/static/models/male_avatar.glb';
+
+    function loadStudentAvatar() {
+      const token = localStorage.getItem('idToken');
+      if (!token) return;
+
+     
+      fetch('/api/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.ok && data.profile) {
+          let avatarUrl = null;
+          let gender = 'female';
+          
+          
+          if (data.profile.currentAvatar) {
+            avatarUrl = data.profile.currentAvatar;
+          }
+          
+          if (data.profile.profileGender) {
+            gender = data.profile.profileGender;
+          }
+          
+          
+          if (!avatarUrl) {
+            const uid = data.profile.uid || 'default';
+            const profileKey = `profile_${uid}`;
+            const savedProfile = localStorage.getItem(profileKey);
+            
+            if (savedProfile) {
+              const profileData = JSON.parse(savedProfile);
+              avatarUrl = profileData.currentAvatarUrl;
+              gender = profileData.gender || gender;
+            }
+          }
+          
+          const headerAvatar = document.getElementById('headerAvatar');
+          if (avatarUrl) {
+            headerAvatar.src = avatarUrl;
+          } else {
+            
+            headerAvatar.src = (gender === 'female') ? DEFAULT_FEMALE_AVATAR : DEFAULT_MALE_AVATAR;
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Error loading avatar:', err);
+       
+        document.getElementById('headerAvatar').src = DEFAULT_FEMALE_AVATAR;
+      });
+    }
+
+    async function fetchAndRenderUser() {
+      const token = localStorage.getItem('idToken');
+      if (!token) {
+        window.location.href = '/signup';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          localStorage.removeItem('idToken');
+          window.location.href = '/signup';
+          return;
+        }
+
+        const body = await res.json();
+        console.log("Profile loaded:", body.profile);
+
+        if (body.ok && body.profile) {
+          
+          const userName = body.profile.name || 'Student';
+          document.getElementById('UserName').textContent = userName;
+          
+          
+          const xp = body.profile.xp || 0;
+          document.getElementById('xpBadge').textContent = `${xp} XP`;
+        } else {
+          document.getElementById('UserName').textContent = 'Student';
+          document.getElementById('xpBadge').textContent = '0 XP';
+        }
+
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        localStorage.removeItem('idToken');
+        window.location.href = '/signup';
+      }
+    }
+
+   
+    function goToExplore(subject) {
+      window.location.href = `/explore?subject=${subject}`;
+    }
+
+    window.onload = async () => {
+      await fetchAndRenderUser();
+      loadStudentAvatar();
+
+      const selectedClass = localStorage.getItem('selectedClass');
+      if (selectedClass) {
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) {
+          welcome.textContent = `Welcome Class ${selectedClass} Student!`;
+        }
+      }
+    };
+  </script>
+
+</body>
+
+</html>

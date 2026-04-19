@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Career Roadmap | ShikshaDrill</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600;700&display=swap');
+  body { font-family: 'Poppins', sans-serif; background: linear-gradient(to bottom, #e0f2fe, #f3e8ff); color: #1f2937; overflow-x: hidden; }
+  .game-title { font-family: 'Fredoka One', cursive; }
+
+  /* floating emojis */
+  .bg-animations span { position: absolute; bottom: -40px; font-size: 2rem; animation: floatUp linear infinite; opacity: 0.9; }
+  .bg-animations span:nth-child(1){ left:6%; animation-duration:20s; }
+  .bg-animations span:nth-child(2){ left:20%; animation-duration:24s; }
+  .bg-animations span:nth-child(3){ left:44%; animation-duration:26s; }
+  .bg-animations span:nth-child(4){ left:68%; animation-duration:22s; }
+  .bg-animations span:nth-child(5){ left:88%; animation-duration:27s; }
+  @keyframes floatUp { 0%{transform:translateY(0) rotate(0deg); opacity:1;} 50%{transform:translateY(-540px) rotate(300deg); opacity:.85;} 100%{transform:translateY(-1100px) rotate(600deg); opacity:0;} }
+
+  /* roadmap steps */
+  .step { border-left: 4px solid #6366f1; padding-left: 1rem; margin-bottom: 1rem; background: #fff; border-radius: 0.5rem; padding: 1rem; }
+  .fade-in { animation: fadeIn 0.8s ease-in forwards; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="relative">
+
+<!-- floating emojis -->
+<div class="bg-animations pointer-events-none">
+  <span>🧮</span><span>📐</span><span>📊</span><span>🔢</span><span>📚</span>
+</div>
+
+<!-- header -->
+<header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg relative z-20 py-4 text-center">
+  <h1 class="game-title text-2xl">🎯 Career Roadmap</h1>
+  <p class="text-sm opacity-80 mt-1">Select your career goal to explore your step-by-step learning journey.</p>
+</header>
+
+<main class="max-w-4xl mx-auto px-6 py-10 relative z-10">
+  <div class="mb-6">
+    <select id="career" class="w-full p-3 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <option value="">-- Select Career --</option>
+      <option value="Doctor">👩‍⚕ Doctor </option>
+      <option value="Engineer">⚙ Engineer </option>
+      <option value="SoftwareDeveloper">💻 Software Developer</option>
+      <option value="dataScientist">🧠 AI & Data Scientist </option>
+      <option value="RoboticsEngineer">🤖 Robotics Engineer </option>
+      <option value="bioTechnologist">🧬 Biotechnologist </option>
+      <option value="spaceScientist">🛰 Space Scientist / Astronomer</option>
+      <option value="cyberSecurityExpert">🔐 Cybersecurity Expert</option>
+    </select>
+  </div>
+
+  <div id="roadmap" class="roadmap hidden fade-in">
+    <h2 class="text-xl font-bold text-indigo-700 mb-4" id="careerTitle"></h2>
+    <div id="steps"></div>
+  </div>
+</main>
+
+<script>
+const careerData = {
+  Doctor: { title: "👩‍⚕ Doctor (Healer of Lives) Roadmap", steps: [
+    "🪴 Start from Class 6:- <br> Learn about the human body, plants, and animals. <br> Watch science videos & do simple biology experiments.",
+    "📘 Class 9–12:- <br> Choose Physics, Chemistry, Biology (PCB). <br> Prepare for NEET Exam after 12th.",
+    "🎓 College & Career:- <br> Study MBBS → MD/MS <br> Become a Doctor, Surgeon, or Medical Specialist.",
+  ]},
+  Engineer: { title: "⚙ Engineer (Problem Solver)", steps: [
+    "🪴 Start from Class 6:- <br> Build small projects (electric circuits, LEGO, science models).<br> Learn basic maths, logic, and technology concepts.",
+    "📘 Class 9–12:- <br> Choose PCM (Physics, Chemistry, Maths).<br> Prepare for JEE / State Engineering Exams.",
+    "🎓 College & Career:- <br> Do B.Tech / B.E.Become a Mechanical, Civil, Computer, or AI Engineer.",
+  ]},
+  SoftwareDeveloper: { title: "💻 Software Developer (Tech Creator)", steps: [
+    "🪴 Start from Class 6:- <br> Try Scratch / Blockly / basic coding games.<br>Learn about apps, websites, and how computers work.",
+    "📘 Class 9–12:- <br>Focus on Computer & Maths.<br>Learn HTML, Python, C++ basics.",
+    "🎓 College & Career:- <br> Study BCA / B.Tech / B.Sc (CS).<br>Become a Software Developer, App or Game Creator.",
+  ]},
+  dataScientist: { title: "🧠 AI & Data Scientist (Future Thinker)", steps: [
+    "🪴 Start from Class 6:- <br> Play with pattern, logic & math puzzles.<br>Explore how AI tools (like chatbots or robots) work.",
+    "📘 Class 9–12:- <br> Focus on Maths, Statistics & Computer.<br>Learn Python & data basics.", 
+    "🎓 College & Career:- <br> Study AI, Data Science, or Computer Science.<br>Work as a Data Scientist or Machine Learning Engineer.",
+  ]},
+  RoboticsEngineer: { title: "🤖 Robotics Engineer (Automation Expert)", steps: [
+    "🪴 Start from Class 6:- <br> Build small DIY robots or mechanical toys.<br>Join Robotics or Science clubs.",
+    "📘 Class 9–12:- <br> Learn Physics, Electronics, and Coding.<br>Try Arduino or simple robotics kits.", 
+    "🎓 College & Career:- <br> Do B.Tech in Robotics / Mechatronics.<br>Work as Robotics Developer or Automation Engineer.",
+  ]},
+  bioTechnologist: { title: "🧬 Biotechnologist (Science of Life)", steps: [
+    "🪴 Start from Class 6:- <br> Study plants, cells, and the human body.<br>Watch biology & lab experiment videos.",
+    "📘 Class 9–12:- <br>Choose PCB (Biology).<br>Learn about genetics & microbiology.", 
+    "🎓 College & Career: <br>Study Biotech or Life Sciences.<br>Work in Medicine, Agriculture, or Research.",
+  ]},
+  spaceScientist: { title: "🛰 Space Scientist / Astronomer (Explorer Beyond Earth)", steps: [
+    "🪴 Start from Class 6:- <br>Learn about planets, stars, and the universe.<br>Use stargazing apps and join space quizzes.",
+    "📘 Class 9–12:-<br>Focus on Physics & Math.<br>Study space science & participate in ISRO/Science fairs.", 
+    "🎓 College & Career:- <br>Do B.Sc + M.Sc in Physics / Astronomy.<br>Work as Space Researcher or Astronomer.",
+  ]},
+  cyberSecurityExpert: { title: "🔐 Cybersecurity Expert (Digital Protector)", steps: [
+    "🪴 Start from Class 6:- <br>Learn internet safety & ethical use of technology.<br>Try simple coding games & puzzles.",
+    "📘 Class 9–12:- <br>Focus on Computer & Networking basics.<br>Learn about hacking prevention, passwords, data safety.", 
+    "🎓 College & Career:- <br>Study BCA / B.Tech (Cybersecurity).<br>Work as Cyber Analyst or Ethical Hacker.",
+  ]},
+
+};
+
+const careerSelect = document.getElementById("career");
+const roadmapDiv = document.getElementById("roadmap");
+const careerTitle = document.getElementById("careerTitle");
+const stepsDiv = document.getElementById("steps");
+
+careerSelect.addEventListener("change", () => {
+  const selected = careerSelect.value;
+  if (selected && careerData[selected]) {
+    careerTitle.textContent = careerData[selected].title;
+    stepsDiv.innerHTML = "";
+    careerData[selected].steps.forEach((step, i) => {
+      const stepDiv = document.createElement("div");
+      stepDiv.className = "step";
+      stepDiv.innerHTML = `<p class="font-semibold">Step ${i+1}</p><p>${step}</p>`;
+      stepsDiv.appendChild(stepDiv);
+    });
+    roadmapDiv.classList.remove("hidden");
+  } else {
+    roadmapDiv.classList.add("hidden");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Technology - Chapter Videos</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      overflow-y: auto; /* ✅ Enable vertical scrolling */
+    }
+    .game-title {
+      font-family: 'Fredoka One', cursive;
+    }
+    .fade-in {
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform:translateY(20px);}
+      to {opacity:1; transform:translateY(0);}
+    }
+    .hover-bounce {
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    }
+    .hover-bounce:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+    }
+
+    .bg-animations span {
+      position: absolute;
+      display: block;
+      font-size: 2rem;
+      animation: floatEmoji 20s linear infinite;
+      bottom: -50px;
+    }
+    .bg-animations span:nth-child(1) { left: 10%; animation-duration: 18s; }
+    .bg-animations span:nth-child(2) { left: 25%; animation-duration: 22s; }
+    .bg-animations span:nth-child(3) { left: 50%; animation-duration: 26s; }
+    .bg-animations span:nth-child(4) { left: 75%; animation-duration: 20s; }
+    .bg-animations span:nth-child(5) { left: 90%; animation-duration: 24s; }
+
+    @keyframes floatEmoji {
+      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-1200px) rotate(720deg); opacity: 0; }
+    }
+
+    .emoji-bubble {
+      display: inline-block;
+      animation: bounce 2s infinite alternate;
+      margin-right: 5px;
+    }
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+
+    .card-bg-emoji {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0.15;
+      animation: cardFloat 6s linear infinite;
+      top: -10px;
+      right: -10px;
+    }
+    @keyframes cardFloat {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-50px) rotate(360deg); }
+    }
+
+    .progress-circle {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 30px;
+    }
+    .progress-circle svg {
+      transform: rotate(-90deg);
+    }
+    .progress-circle circle {
+      fill: none;
+      stroke-width: 10;
+      stroke-linecap: round;
+    }
+    .progress-bg {
+      stroke: #e5e7eb;
+    }
+    .progress-bar {
+      stroke: #3b82f6;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 314;
+      transition: stroke-dashoffset 1s;
+    }
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e3a8a;
+      text-align: center;
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen relative">
+
+  <!-- Background floating emojis -->
+  <div class="bg-animations">
+    <span>💻</span>
+    <span>🌐</span>
+    <span>📱</span>
+    <span>🚀</span>
+    <span>🎨</span>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg relative z-10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="location.href='index.html'">
+        <div class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-2xl">💻</div>
+        <div>
+          <h1 class="game-title text-2xl">Technology</h1>
+          <p class="text-sm opacity-75">Chapter videos</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress Circle -->
+  <div class="progress-circle relative z-10 mt-6">
+    <svg width="120" height="120">
+      <circle class="progress-bg" cx="60" cy="60" r="50"></circle>
+      <circle class="progress-bar" cx="60" cy="60" r="50"></circle>
+    </svg>
+    <div class="progress-text" id="progress-text">0%<br>Watched</div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-4xl mx-auto px-6 py-10 relative z-10">
+    <div class="mb-10 flex items-center space-x-4">
+      <span class="text-4xl emoji-bubble">💻</span>
+      <h2 class="text-3xl font-bold text-gray-800">Chapter videos</h2>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl p-8 relative">
+      <p class="text-gray-600 mb-6">Watch chapters and learn step by step! 📺</p>
+      <div class="grid md:grid-cols-2 gap-5 relative" id="chapters-container">
+        <!-- Chapter cards added via JS -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const chapters = [
+      {title: 'Chapter 1: Introduction to Computers', link: 'https://youtu.be/wJ8a2ddLuc0?si=cKekkGEYOZXE5-0J', emoji: '💻', bg: 'from-blue-100 to-blue-200', watched: false},
+      {title: 'Chapter 2: How Computers Work', link: 'https://youtu.be/pJ9WMqA2Tvc?si=qBkKD1JHOfHDwt-_', emoji: '🖥️', bg: 'from-green-100 to-green-200', watched: false},
+      {title: 'Chapter 3: Introduction to the Internet', link: 'https://youtu.be/WCWZxwZpfmE?si=KF0tK5FDnNXBZAYU', emoji: '🌐', bg: 'from-purple-100 to-purple-200', watched: false},
+      {title: 'Chapter 4: Fun with Presentations', link: 'https://youtu.be/Nr3h4qQW2kQ?si=dPJBSw_I-4U1CZba', emoji: '📊', bg: 'from-pink-100 to-pink-200', watched: false},
+      {title: 'Chapter 5: Drawing & Creativity with Computers', link: 'https://youtu.be/_IbOGqlG3Uw?si=AqPxP9OzqJt0YKFw', emoji: '🎨', bg: 'from-yellow-100 to-yellow-200', watched: false},
+      {title: 'Chapter 6: Technology in Daily Life', link: 'https://youtu.be/LOyDnwpjjMY?si=K6E4UxB6HnXlllMh', emoji: '📱', bg: 'from-indigo-100 to-indigo-200', watched: false},
+      {title: 'Chapter 7: Environmental Technology', link: 'https://youtu.be/BXw8Oin8tYI?si=rZTwjzXlXAvNOWnP', emoji: '🌱', bg: 'from-teal-100 to-teal-200', watched: false},
+      {title: 'Chapter 8: Future of Technology (Inspiration)', link: 'https://youtu.be/bae1cpV1u9Y?si=ZI5CpEZrRfsAmvz5', emoji: '🚀', bg: 'from-red-100 to-red-200', watched: false},
+    ];
+
+    const container = document.getElementById('chapters-container');
+
+    chapters.forEach((ch) => {
+      const div = document.createElement('div');
+      div.className = `fade-in hover-bounce bg-gradient-to-r ${ch.bg} rounded-lg p-6 shadow-md relative overflow-hidden`; // corners thode rounded
+
+      div.innerHTML = `
+        <span class="card-bg-emoji">${ch.emoji}</span>
+        <h3 class="font-semibold text-lg flex items-center gap-2">
+          <span class="emoji-bubble">${ch.emoji}</span> ${ch.title}
+        </h3>
+        <a href="${ch.link}" target="_blank"
+          class="inline-block mt-3 px-3 py-1.5 bg-blue-600 text-white text-sm font-semibold rounded-md shadow hover:bg-blue-700 transition duration-300">
+          ▶️ Watch Video
+        </a>
+      `;
+      container.appendChild(div);
+    });
+
+    function updateProgress() {
+      const watchedChapters = chapters.filter(ch => ch.watched).length;
+      const percent = Math.round((watchedChapters / chapters.length) * 100);
+      const progressBar = document.querySelector('.progress-bar');
+      const radius = progressBar.r.baseVal.value;
+      const circumference = 2 * Math.PI * radius;
+      progressBar.style.strokeDasharray = circumference;
+      progressBar.style.strokeDashoffset = circumference - (percent / 100 * circumference);
+      document.getElementById('progress-text').innerHTML = `${percent}%<br>Watched`;
+    }
+
+    // Example: Mark first 2 chapters as watched
+    chapters[0].watched = true;
+    chapters[1].watched = true;
+    updateProgress();
+  </script>
+</body>
+</html>

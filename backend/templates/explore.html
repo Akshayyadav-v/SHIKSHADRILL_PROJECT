@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student's Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap");
+
+    body {
+      font-family: "Poppins", sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-title {
+      font-family: "Fredoka One", cursive;
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-5px) scale(1.03);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      from {
+        transform: translateY(100vh) scale(0.5);
+        opacity: 0.8;
+      }
+
+      to {
+        transform: translateY(-10vh) scale(1);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+  <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle" style="width: 6px; height: 6px; left: 10%; animation-duration: 12s"></div>
+    <div class="particle" style="width: 8px; height: 8px; left: 30%; animation-duration: 15s"></div>
+    <div class="particle" style="width: 5px; height: 5px; left: 50%; animation-duration: 18s"></div>
+    <div class="particle" style="width: 7px; height: 7px; left: 70%; animation-duration: 20s"></div>
+    <div class="particle" style="width: 6px; height: 6px; left: 85%; animation-duration: 25s"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg relative z-10">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-2xl">
+          📘
+        </div>
+        <div>
+          <h1 class="game-title text-2xl">Student's Dashboard</h1>
+        </div>
+      </div>
+      <div class="flex items-center space-x-6">
+        <div class="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-full shadow-md">
+          <span class="text-2xl">🪙</span>
+          <span class="font-semibold text-lg" id="studentXP">0 XP</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div
+            class="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center text-lg">
+            👩
+          </div>
+          <span id="UserName" class="font-medium">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto px-4 py-10 relative z-10">
+    <h2 class="text-2xl font-bold text-gray-700 mb-6">
+      📚 Explore Resources
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Syllabus -->
+      <div id="syllabusCard"
+        class="card-hover bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">📘</span>
+          <h3 class="text-lg font-bold">Syllabus</h3>
+          <p class="text-sm text-blue-100">
+            Complete syllabus with all chapters
+          </p>
+        </div>
+      </div>
+
+      <!-- Quiz -->
+      <div id="quizCard"
+        class="card-hover bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">📝</span>
+          <h3 class="text-lg font-bold">Quiz</h3>
+          <p class="text-sm text-green-100">
+            Test your knowledge with quizzes
+          </p>
+        </div>
+      </div>
+
+      <!-- Video Solutions -->
+      <div id="videosolutionCard"
+        class="card-hover bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">🎥</span>
+          <h3 class="text-lg font-bold">Video Solutions</h3>
+          <p class="text-sm text-purple-100">
+            Detailed solutions for quizzes
+          </p>
+        </div>
+      </div>
+
+      <!-- NCERT Links -->
+      <div id="ncertCard"
+        class="card-hover bg-gradient-to-br from-pink-500 to-red-500 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">📖</span>
+          <h3 class="text-lg font-bold">NCERT Links</h3>
+          <p class="text-sm text-pink-100">Direct links to NCERT textbooks</p>
+        </div>
+      </div>
+
+      <!-- Chapters Video -->
+      <div id="chapvideoCard"
+        class="card-hover bg-gradient-to-br from-indigo-500 to-indigo-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">🎬</span>
+          <h3 class="text-lg font-bold">Chapters Video</h3>
+          <p class="text-sm text-indigo-100">
+            Watch all chapter-wise video lessons
+          </p>
+        </div>
+      </div>
+
+      <!-- Test Papers -->
+      <div id="testpaperCard"
+        class="card-hover bg-gradient-to-br from-teal-500 to-teal-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">📑</span>
+          <h3 class="text-lg font-bold">Test Papers</h3>
+          <p class="text-sm text-teal-100">Practice with test papers</p>
+        </div>
+      </div>
+
+      <!-- Road Map -->
+      <div id="roadmapCard"
+        class="card-hover bg-gradient-to-br from-sky-500 to-sky-600 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">🗺</span>
+          <h3 class="text-lg font-bold">Road Map</h3>
+          <p class="text-sm text-sky-100">Step-by-step learning journey</p>
+        </div>
+      </div>
+
+      <!-- Community Group -->
+      <div id="communitygroupCard"
+        class="card-hover bg-gradient-to-br from-orange-500 to-yellow-500 text-white p-6 rounded-2xl shadow-lg cursor-pointer">
+        <div class="flex flex-col items-center text-center space-y-3">
+          <span class="text-4xl">👥</span>
+          <h3 class="text-lg font-bold">Community Group</h3>
+          <p class="text-sm text-yellow-100">
+            Join peers & mentors in discussions
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    window.onload = async () => {
+      const params = new URLSearchParams(window.location.search);
+      const subject = params.get("subject") || "science";
+
+      console.log("Loaded explore page for subject:", subject);
+
+      // Update heading dynamically
+      document.querySelector("h2").innerText = `📚 Explore ${subject.charAt(0).toUpperCase() + subject.slice(1)
+        } Resources`;
+      document.title = `${subject.charAt(0).toUpperCase() + subject.slice(1)
+        } - Explore`;
+
+      // ===== SYLLABUS CARD =====
+      const syllabusCard = document.getElementById("syllabusCard");
+      if (syllabusCard) {
+        syllabusCard.onclick = () => {
+          console.log("Syllabus clicked for:", subject);
+          if (subject === "science")
+            window.location.href = "/science_syllabus";
+          else if (subject === "technology")
+            window.location.href = "/technology_syllabus";
+          else if (subject === "engineering")
+            window.location.href = "/engineering_syllabus";
+          else if (subject === "mathematics")
+            window.location.href = "/mathematics_syllabus";
+          else alert("Syllabus not found!");
+        };
+      }
+
+      // ===== NCERT CARD =====
+      const ncertCard = document.getElementById("ncertCard");
+      if (ncertCard) {
+        ncertCard.onclick = () => {
+          console.log("NCERT clicked for:", subject);
+          if (subject === "science") window.location.href = "/science_ncert";
+          else if (subject === "technology")
+            window.location.href = "/technology_ncert";
+          else if (subject === "engineering")
+            window.location.href = "/engineering_ncert";
+          else if (subject === "mathematics")
+            window.location.href = "/mathematics_ncert";
+          else alert("NCERT Link not found!");
+        };
+      }
+
+      // ===== TEST PAPER CARD =====
+      const testpaperCard = document.getElementById("testpaperCard");
+      if (testpaperCard) {
+        testpaperCard.onclick = () => {
+          console.log("Test paper clicked for:", subject);
+          if (subject === "science")
+            window.location.href = "/science_testpaper";
+          else if (subject === "technology")
+            window.location.href = "/technology_testpaper";
+          else if (subject === "engineering")
+            window.location.href = "/engineering_testpaper";
+          else if (subject === "mathematics")
+            window.location.href = "/mathematics_testpaper";
+          else alert("Test Paper Link not found!");
+        };
+      }
+
+      // ===== ROADMAP CARD =====
+      const roadmapCard = document.getElementById("roadmapCard");
+      if (roadmapCard) {
+        roadmapCard.onclick = () => {
+          console.log("Roadmap clicked");
+          window.location.href = "/roadmap";
+        };
+      }
+
+      // ===== COMMUNITY GROUP CARD =====
+      const communitygroupCard =
+        document.getElementById("communitygroupCard");
+      if (communitygroupCard) {
+        communitygroupCard.onclick = () => {
+          console.log("Community group clicked");
+          window.location.href = "/community_group";
+        };
+      }
+
+      // ===== CHAPTER VIDEO CARD =====
+      const chapvideoCard = document.getElementById("chapvideoCard");
+      if (chapvideoCard) {
+        chapvideoCard.onclick = () => {
+          console.log("Chapter video clicked for:", subject);
+          if (subject === "science")
+            window.location.href = "/science_chapvideo";
+          else if (subject === "technology")
+            window.location.href = "/technology_chapvideo";
+          else if (subject === "engineering")
+            window.location.href = "/engineering_chapvideo";
+          else if (subject === "mathematics")
+            window.location.href = "/mathematics_chapvideo";
+          else alert("Chapter video not found");
+        };
+      }
+
+      // ===== QUIZ CARD =====
+      const quizCard = document.getElementById("quizCard");
+      if (quizCard) {
+        quizCard.onclick = () => {
+          console.log("Quiz clicked for:", subject);
+          localStorage.setItem("selectedSubject", subject);
+          window.location.href = `/level?subject=${subject}`;
+        };
+      }
+
+      // ===== VIDEO SOLUTION CARD (if exists) =====
+      const videosolutionCard = document.getElementById("videosolutionCard");
+      if (videosolutionCard) {
+        videosolutionCard.onclick = () => {
+          alert("Video Solutions coming soon!");
+        };
+      }
+
+      // ===== LOAD USER DATA =====
+      await loadUserData();
+
+      // ===== LOAD STUDENT XP =====
+      await loadStudentXP();
+    };
+
+    async function loadUserData() {
+      const token = localStorage.getItem("idToken");
+      const UserNameEl = document.getElementById("UserName");
+
+      if (!token) {
+        if (UserNameEl) UserNameEl.textContent = "Guest";
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/profile", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) {
+          if (UserNameEl) UserNameEl.textContent = "Guest";
+          return;
+        }
+
+        const data = await res.json();
+        console.log("User profile loaded:", data);
+
+        if (UserNameEl) {
+          if (data.ok && data.profile && data.profile.name) {
+            UserNameEl.textContent = `${data.profile.name}`;
+          } else {
+            UserNameEl.textContent = "Student";
+          }
+        }
+      } catch (err) {
+        console.error("Error loading user:", err);
+        if (UserNameEl) UserNameEl.textContent = "Student";
+      }
+    }
+
+    async function loadStudentXP() {
+      const token = localStorage.getItem("idToken");
+      const coinsEl = document.getElementById("studentXP");
+
+      if (!token) return;
+
+      try {
+        const res = await fetch("/get_student_xp", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        const xp = data.xp || 0;
+
+        if (coinsEl) {
+          coinsEl.textContent = xp.toLocaleString();
+        }
+      } catch (err) {
+        console.error("Failed to load XP:", err);
+      }
+    }
+  </script>
+
+</body>
+
+</html>

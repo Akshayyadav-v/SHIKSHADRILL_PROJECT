@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ShikshaDrill • Puzzle (Styled)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #6366f1 100%)
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite
+        }
+
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(59, 130, 246, .5)
+            }
+
+            50% {
+                box-shadow: 0 0 30px rgba(59, 130, 246, .8)
+            }
+        }
+
+        .heart-beat {
+            animation: heart-beat 1.5s ease-in-out infinite
+        }
+
+        @keyframes heart-beat {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.08)
+            }
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px) scale(1.02)
+        }
+
+        .selected-option {
+            background: linear-gradient(135deg, #10B981, #059669) !important;
+            color: #fff !important
+        }
+
+        .recording-pulse {
+            animation: recording-pulse 1s ease-in-out infinite
+        }
+
+        @keyframes recording-pulse {
+
+            0%,
+            100% {
+                background: linear-gradient(135deg, #ec4899, #be185d)
+            }
+
+            50% {
+                background: linear-gradient(135deg, #f472b6, #ec4899)
+            }
+        }
+
+        .btn {
+            transition: .15s
+        }
+
+        .shake {
+            animation: shake .35s ease
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0)
+            }
+
+            25% {
+                transform: translateX(-5px)
+            }
+
+            75% {
+                transform: translateX(5px)
+            }
+        }
+
+        /* Cards inside puzzle */
+        .p-row {
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06);
+            border-radius: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="max-w-3xl mx-auto min-h-screen p-4 flex flex-col gap-4">
+        <!-- Header -->
+        <header class="flex items-center justify-between text-white">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 grid place-items-center text-lg">
+                    🎓</div>
+                <div>
+                    <h1 class="game-title text-2xl">ShikshaDrill</h1>
+                    <p id="subtitle" class="text-sm opacity-90">Puzzle Quiz • Drag to arrange</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 bg-white/10 rounded-xl px-3 py-1">
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full font-bold text-sm flex items-center gap-1">
+                            <span>🪙</span><span id="xpCount">1,250</span>
+                        </div>
+                        <div class="flex items-center gap-1 text-sm">
+                            <span class="heart-beat text-2xl">❤️</span>
+                            <span class="heart-beat text-2xl" style="animation-delay:0.25s">❤️</span>
+                            <span class="heart-beat text-2xl" style="animation-delay:0.5s">❤️</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <select id="lang"
+                        class="bg-white bg-opacity-20 text-white px-2 py-1 rounded-lg font-semibold text-sm border border-white/30 focus:outline-none">
+                        <option value="en" class="text-gray-800">🇺🇸 EN</option>
+                        <option value="hi" class="text-gray-800">🇮🇳 हिं</option>
+                        <option value="or" class="text-gray-800">🇮🇳 ଓଡ଼</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main card -->
+        <main class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Top banner with controls -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-5 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="px-3 py-1 rounded-full bg-indigo-700 text-sm font-bold">🧩 <span
+                                id="subjectBadge">Mathematics</span></div>
+                        <div class="text-xs opacity-90">Type: Arrange</div>
+                        <div class="ml-3 hidden sm:flex items-center gap-2 bg-white/10 rounded-xl px-2 py-1 text-xs">
+                            <span id="labelPuzzle">Puzzle</span>
+                            <strong id="stepNow">1</strong><span class="opacity-60">/</span><strong
+                                id="stepTotal">2</strong>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button id="prevBtn"
+                            class="btn bg-white/15 hover:bg-white/25 text-xs font-bold px-3 py-1.5 rounded-full">‹ <span
+                                id="prevLabel">Prev</span></button>
+                        <button id="nextBtnTop"
+                            class="btn bg-white/15 hover:bg-white/25 text-xs font-bold px-3 py-1.5 rounded-full"><span
+                                id="nextLabelTop">Next</span> ›</button>
+                    </div>
+                </div>
+
+                <div class="mt-3 space-y-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs">⏰ Timer</span>
+                        <strong id="timerText" class="text-xs font-semibold">03:00</strong>
+                        <div class="flex-1 bg-white/20 rounded-full h-2 overflow-hidden">
+                            <div id="timerBar" class="h-2 bg-amber-300 rounded-full" style="width:100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs">📈 Progress</span>
+                        <div class="flex-1 bg-white/20 rounded-full h-2 overflow-hidden">
+                            <div id="progressBar" class="h-2 bg-emerald-300 rounded-full" style="width:0%"></div>
+                        </div>
+                        <span id="progressText" class="text-xs">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-5">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex-1">
+                        <h2 id="questionText" class="text-gray-800 font-bold mb-1">🧩 Arrange these numbers in
+                            <strong>ascending order</strong>:
+                        </h2>
+                        <p id="hintText" class="text-indigo-700 text-sm mb-3">Drag cards up/down to sort — or use voice
+                            to speak the sequence (e.g., "15 28 42 67").</p>
+                    </div>
+
+                    <div class="flex flex-col gap-2 items-end">
+                        <button id="listenBtn"
+                            class="btn bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-3 py-2 rounded-xl font-semibold text-sm shadow-lg flex items-center gap-2"
+                            onclick="listenQuestion()">
+                            <span>🔊</span><span id="listenLabel">Listen</span>
+                        </button>
+                        <button id="voiceBtn"
+                            class="btn bg-gradient-to-r from-pink-500 to-pink-400 text-white px-3 py-2 rounded-xl font-semibold text-sm shadow-lg flex items-center gap-2"
+                            onclick="toggleVoice()">
+                            <span>🎙️</span><span id="voiceLabel">Voice</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Puzzle list -->
+                <div id="puzzleList" class="mt-4 space-y-3" aria-live="polite"></div>
+
+                <!-- Controls -->
+                <div class="mt-5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex gap-2">
+                        <button id="shuffleBtn"
+                            class="btn px-4 py-2 rounded-xl bg-white text-indigo-700 hover:bg-white/90 font-semibold text-sm">🔀
+                            <span id="shuffleLabel">Shuffle</span></button>
+                        <button id="resetBtn"
+                            class="btn px-4 py-2 rounded-xl bg-white text-amber-700 hover:bg-white/90 font-semibold text-sm">↺
+                            <span id="resetLabel">Reset</span></button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button id="submitBtn"
+                            class="btn px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm">✅
+                            <span id="submitLabel">Submit</span></button>
+                        <button id="restartAll"
+                            class="btn bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-full text-xs font-semibold">🔄
+                            Restart All</button>
+                    </div>
+                </div>
+
+                <div id="resultBox" class="mt-4 hidden">
+                    <div id="resultInner" class="rounded-xl p-3 text-sm font-semibold"></div>
+                </div>
+            </div>
+        </main>
+
+        <div id="voiceStatus"
+            class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-black bg-opacity-80 text-white px-6 py-4 rounded-2xl text-center z-50 hidden">
+            <div class="text-3xl mb-2">🎙️</div>
+            <div class="font-bold text-base" id="listening">Listening...</div>
+            <div class="text-sm opacity-80" id="speakClear">Say numbers separated by space or say "submit"</div>
+        </div>
+    </div>
+
+    <script>
+        /* -------------------------
+           Data & localization
+           ------------------------- */
+        const T = {
+            en: { subtitle: "Puzzle Quiz • Drag to arrange", labels: { puzzle: "Puzzle", language: "Language", prev: "Prev", next: "Next", finish: "Finish", shuffle: "Shuffle", reset: "Reset", restartAll: "Restart All", tip: "Tip: You can drag items or use the ↑ and ↓ buttons on each card." }, hint: "Drag cards up/down to sort the correct order", correct: "Perfect order! +50 coins 🎉", wrong: "Not quite yet — try again!", done: "All puzzles solved! Great job!", subject: "Mathematics", listen: "Listen", voice: "Voice", selected: "You selected", welcome: "Welcome to ShikshaDrill! Ready?" },
+            hi: { subtitle: "पहेली क्विज़ • क्रम में लगाएँ", labels: { puzzle: "पहेली", language: "भाषा", prev: "पिछला", next: "अगला", finish: "समाप्त", shuffle: "घुमाएँ", reset: "रीसेट", restartAll: "सब फिर से शुरू", tip: "टिप: कार्ड्स को खींचें या प्रत्येक कार्ड पर ↑ और ↓ बटन का उपयोग करें।" }, hint: "सही क्रम में लगाने के लिए कार्ड्स को ऊपर/नीचे खींचें", correct: "बिल्कुल सही! 🎉 +50 सिक्के", wrong: "अभी सही नहीं — फिर से कोशिश करें!", done: "सभी पहेलियाँ हल! बढ़िया काम!", subject: "गणित", listen: "सुनें", voice: "आवाज़", selected: "आपने चुना", welcome: "स्वागत है! तैयार हैं?" },
+            or: { subtitle: "ପଜଲ୍ କୁଇଜ୍ • ଡ୍ରାଗ୍ କରନ୍ତୁ", labels: { puzzle: "ପଜଲ୍", language: "ଭାଷା", prev: "ପୂର୍ବ", next: "ଆଗକୁ", finish: "ସମାପ୍ତ", shuffle: "ଶଫଲ୍", reset: "ରିସେଟ୍", restartAll: "ସବୁ ପୁଣି ଆରମ୍ଭ", tip: "ସୂଚନା: ଡ୍ରାଗ୍ କରନ୍ତୁ ବା ↑/↓ ବଟନ୍ ବ୍ୟବହାର କରନ୍ତୁ।" }, hint: "ଠିକ୍ ଅନୁକ୍ରମକୁ ଡ୍ରାଗ୍ କରନ୍ତୁ", correct: "ଠିକ୍! 🎉 +50 କୋଇନ୍", wrong: "ଏଖନ ଠିକ୍ ନୁହେଁ — ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ!", done: "ସମସ୍ତ ପଜଲ୍ ସମାପ୍ତ! ଶାନ୍ଦାର!", subject: "ଗଣିତ", listen: "ଶୁଣନ୍ତୁ", voice: "ସ୍ୱର", selected: "ଆପଣ ବାଛିଲେ", welcome: "ସ୍ୱାଗତ!" }
+        };
+
+        let puzzles = []; 
+        let quizData = null; 
+
+        let idx = 0, lang = 'en', orders = {}, solved = {}, XP = 1250;
+        const TIMER_MS = 180000;
+        let timer = null, timerStart = null, recognition = null, isListening = false;
+
+        let correctPuzzles = 0;
+        let totalPuzzles = 0;
+        let studentName = "Student";
+        let quizStartTime = null;
+
+        
+        async function loadQuizFromFirestore() {
+            
+            const params = new URLSearchParams(window.location.search);
+            const quizId = params.get('id');
+
+            if (!quizId) {
+                alert('No quiz ID provided!');
+                window.location.href = '/student_quizzes';
+                return;
+            }
+
+            try {
+                console.log('Loading puzzle quiz:', quizId);
+
+                const res = await fetch(`/get_puzzle_quiz?id=${quizId}`);
+
+                if (!res.ok) {
+                    throw new Error('Failed to load quiz');
+                }
+
+                quizData = await res.json();
+                console.log('Quiz data loaded:', quizData);
+
+                
+                if (!quizData.puzzles || quizData.puzzles.length === 0) {
+                    alert('This quiz has no puzzles!');
+                    window.location.href = '/student_quizzes';
+                    return;
+                }
+
+
+                puzzles = quizData.puzzles.map((p, index) => {
+
+                    const items = p.items.map(item => ({
+                        id: item.id,
+                        en: item.value,
+                        hi: item.value,
+                        or: item.value
+                    }));
+
+
+                    const correctOrder = p.correctOrder.map(value => {
+
+                        const foundItem = p.items.find(item => item.value === value);
+                        return foundItem ? foundItem.id : null;
+                    }).filter(id => id !== null);
+
+                    return {
+                        id: p.id || `puzzle_${index}`,
+                        q: {
+                            en: p.question,
+                            hi: p.question,
+                            or: p.question
+                        },
+                        items: items,
+                        correct: correctOrder
+                    };
+                });
+
+                console.log('Converted puzzles:', puzzles);
+
+
+                if (quizData.title) {
+                    document.getElementById('subtitle').textContent = quizData.title;
+                }
+
+                if (quizData.subject) {
+                    document.getElementById('subjectBadge').textContent = quizData.subject.charAt(0).toUpperCase() + quizData.subject.slice(1);
+                }
+
+
+                
+                totalPuzzles = puzzles.length;
+
+                
+                try {
+                    const token = localStorage.getItem('idToken');
+                    const profileRes = await fetch('/api/profile', {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (profileRes.ok) {
+                        const profileData = await profileRes.json();
+                        studentName = profileData.profile.name || "Student";
+                    }
+                } catch (err) {
+                    console.error('Failed to get student name:', err);
+                }
+
+
+                await loadStudentXP();
+
+
+                quizStartTime = Date.now();
+
+
+                initOrders();
+                setLang('en');
+                xpCount.textContent = XP.toLocaleString();
+                initSpeech();
+
+
+                render();
+
+            } catch (error) {
+                console.error('Error loading quiz:', error);
+                alert('Failed to load quiz. Please try again.');
+                window.location.href = '/student_quizzes';
+            }
+        }
+
+
+        async function loadStudentXP() {
+            try {
+                const token = localStorage.getItem('idToken');
+                const res = await fetch('/get_student_xp', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await res.json();
+                XP = data.xp || 0;
+                xpCount.textContent = XP.toLocaleString();
+                console.log('Loaded student XP:', XP);
+            } catch (err) {
+                console.error('Failed to load XP:', err);
+                XP = 0;
+            }
+        }
+
+
+        const $ = id => document.getElementById(id);
+        const langSel = $('lang'), puzzleList = $('puzzleList'), questionText = $('questionText'), hintText = $('hintText');
+        const stepNow = $('stepNow'), stepTotal = $('stepTotal'), resultBox = $('resultBox'), resultInner = $('resultInner');
+        const progressBar = $('progressBar'), progressText = $('progressText'), timerBar = $('timerBar'), timerText = $('timerText');
+        const xpCount = $('xpCount'), listenLabel = $('listenLabel'), voiceLabel = $('voiceLabel'), voiceStatus = $('voiceStatus');
+        const listeningText = $('listening'), speakClear = $('speakClear');
+
+        
+        function initOrders() {
+            puzzles.forEach(p => {
+                orders[p.id] = p.items.map(i => i.id).sort(() => Math.random() - .5);
+                solved[p.id] = false;
+            });
+        }
+
+        
+        function setLang(l) {
+            lang = l;
+            const t = T[lang];
+            $('subtitle').textContent = t.subtitle;
+            $('labelPuzzle') && ($('labelPuzzle').textContent = t.labels.puzzle);
+            $('prevLabel') && ($('prevLabel').textContent = t.labels.prev || 'Prev');
+            $('shuffleLabel') && ($('shuffleLabel').textContent = t.labels.shuffle || 'Shuffle');
+            $('resetLabel') && ($('resetLabel').textContent = t.labels.reset || 'Reset');
+            listenLabel.textContent = t.listen || 'Listen';
+            voiceLabel.textContent = t.voice || 'Voice';
+            render();
+        }
+
+       
+        function cur() { return puzzles[idx]; }
+        function textOf(it) { return it[lang] || it.en; }
+        function buildRow(id, label, locked) {
+            const row = document.createElement('div');
+            row.className = 'p-row p-3 flex items-center justify-between gap-3 p-3';
+            row.draggable = !locked;
+            row.dataset.id = id;
+
+            const left = document.createElement('div');
+            left.className = 'flex items-center gap-3';
+            const handle = document.createElement('div');
+            handle.className = 'text-gray-500 select-none cursor-grab';
+            handle.textContent = '↕';
+            const lab = document.createElement('div');
+            lab.className = 'font-semibold text-gray-800';
+            lab.textContent = label;
+            left.append(handle, lab);
+
+            const right = document.createElement('div');
+            right.className = 'flex items-center gap-2';
+            const upButton = document.createElement('button');
+            upButton.className = 'px-2 py-1 rounded-lg bg-white text-indigo-700 text-xs font-bold';
+            upButton.textContent = '↑';
+            upButton.addEventListener('click', () => moveRow(id, -1));
+
+            const downButton = upButton.cloneNode(true);
+            downButton.textContent = '↓';
+            downButton.addEventListener('click', () => moveRow(id, 1));
+
+            if (locked) {
+                upButton.disabled = downButton.disabled = true;
+                upButton.classList.add('opacity-50', 'cursor-not-allowed');
+                downButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+            right.append(upButton, downButton);
+            row.append(left, right);
+
+            if (!locked) {
+                row.addEventListener('dragstart', e => { row.classList.add('opacity-60'); e.dataTransfer.setData('text/plain', id); });
+                row.addEventListener('dragend', () => row.classList.remove('opacity-60'));
+                row.addEventListener('dragover', e => { e.preventDefault(); row.classList.add('ring', 'ring-indigo-200'); });
+                row.addEventListener('dragleave', () => row.classList.remove('ring', 'ring-indigo-200'));
+                row.addEventListener('drop', e => { e.preventDefault(); row.classList.remove('ring', 'ring-indigo-200'); const from = e.dataTransfer.getData('text/plain'); reorder(id, from); });
+            }
+            return row;
+        }
+
+        function drawList() {
+            const p = cur();
+            const locked = !!solved[p.id];
+            puzzleList.innerHTML = '';
+            orders[p.id].forEach(id => {
+                const it = p.items.find(x => x.id === id);
+                puzzleList.appendChild(buildRow(id, textOf(it), locked));
+            });
+        }
+
+        
+        function moveRow(id, d) {
+            const arr = orders[cur().id];
+            const i = arr.indexOf(id);
+            const n = i + d;
+            if (n < 0 || n >= arr.length) return;
+            const [item] = arr.splice(i, 1);
+            arr.splice(n, 0, item);
+            drawList(); hideResult();
+        }
+
+        function reorder(to, from) {
+            if (to === from) return;
+            const arr = orders[cur().id];
+            const i = arr.indexOf(from), j = arr.indexOf(to);
+            const [it] = arr.splice(i, 1);
+            arr.splice(j, 0, it);
+            drawList(); hideResult();
+        }
+
+        
+        function startTimer() {
+            if (timer) clearInterval(timer);
+            timerStart = performance.now();
+            setTimer(TIMER_MS);
+            timer = setInterval(() => {
+                const elapsed = performance.now() - timerStart;
+                const rem = Math.max(0, TIMER_MS - elapsed);
+                const pct = Math.max(0, rem / TIMER_MS) * 100;
+                timerBar.style.width = pct.toFixed(0) + '%';
+                setTimer(rem);
+                if (rem <= 0) { clearInterval(timer); timer = null; timeUp(); }
+            }, 200);
+        }
+        function setTimer(ms) {
+            const s = Math.ceil(ms / 1000), m = Math.floor(s / 60), ss = s % 60;
+            timerText.textContent = `${String(m).padStart(2, '0')}:${String(ss).padStart(2, '0')}`;
+        }
+        function timeUp() { shake(); show(false); }
+
+
+        function shake() { puzzleList.classList.remove('shake'); void puzzleList.offsetWidth; puzzleList.classList.add('shake'); setTimeout(() => puzzleList.classList.remove('shake'), 380) }
+        function correct() { const p = cur(); return JSON.stringify(orders[p.id]) === JSON.stringify(p.correct); }
+        function show(ok) {
+            const t = T[lang];
+            resultBox.classList.remove('hidden');
+            resultInner.className = 'rounded-xl p-3 text-sm font-semibold ' + (ok ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200');
+            resultInner.textContent = ok ? t.correct : t.wrong;
+        }
+        function hideResult() { resultBox.classList.add('hidden'); resultInner.textContent = ''; }
+
+       
+        function onSubmit(manual = true) {
+            const ok = correct();
+            show(ok);
+            if (ok) {
+                solved[cur().id] = true;
+                correctPuzzles++; 
+                drawList();
+                addXP(50);
+                speak(T[lang].correct);
+                progress();
+                
+                setTimeout(() => {
+                    if (idx < puzzles.length - 1) { idx++; render(); } else { showPuzzleResults(); }
+                }, 900);
+            } else {
+                if (manual) speak(T[lang].wrong);
+            }
+        }
+
+        function addXP(n) {
+            XP += n;
+            xpCount.textContent = XP.toLocaleString();
+            
+            const div = document.createElement('div');
+            div.className = 'fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-3xl font-bold text-yellow-400 animate-bounce z-50 pointer-events-none';
+            div.textContent = `+${n} XP! 🪙`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 1600);
+        }
+
+        
+        function onNext() {
+            if (!solved[cur().id]) onSubmit(false);
+            setTimeout(() => {
+                if (idx < puzzles.length - 1) { idx++; render(); } else { showPuzzleResults(); }
+            }, 500);
+        }
+        async function showPuzzleResults() {
+           
+            const timeElapsed = Date.now() - quizStartTime;
+            const seconds = Math.floor(timeElapsed / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            const timeString = `${minutes}m ${remainingSeconds}s`;
+
+           
+            const percentage = Math.round((correctPuzzles / totalPuzzles) * 100);
+
+
+            const baseXP = 50;
+            const bonusXP = Math.round((percentage / 100) * 50);
+            const totalXPEarned = baseXP + bonusXP;
+
+            
+            await submitPuzzleAttempt(correctPuzzles, totalPuzzles);
+
+            
+            const updatedXP = await updateStudentXP(totalXPEarned);
+
+           
+            const quizLevel = quizData.level || 'medium';
+
+            
+            const d = document.createElement('div');
+            d.className = 'fixed z-50 bottom-6 left-1/2 -translate-x-1/2 bg-white text-gray-800 rounded-2xl shadow px-4 py-2 font-semibold border';
+            d.textContent = T[lang].done;
+            document.body.appendChild(d);
+
+            
+            setTimeout(() => {
+                const resultUrl = `/quiz_result?` +
+                    `correct=${correctPuzzles}&` +
+                    `total=${totalPuzzles}&` +
+                    `time=${encodeURIComponent(timeString)}&` +
+                    `name=${encodeURIComponent(studentName)}&` +
+                    `level=${quizLevel}&` +
+                    `xp=${totalXPEarned}&` +
+                    `totalXP=${updatedXP || XP}`;
+
+                console.log('Redirecting to result page:', resultUrl);
+                window.location.href = resultUrl;
+            }, 1500);
+        }
+
+
+        async function submitPuzzleAttempt(correct, total) {
+            try {
+                const token = localStorage.getItem('idToken');
+                const params = new URLSearchParams(window.location.search);
+                const quizId = params.get('id');
+
+                const res = await fetch('/submit_quiz_attempt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        quiz_id: quizId,
+                        score: correct,
+                        total_questions: total,
+                        quiz_type: 'puzzle'
+                    })
+                });
+
+                const data = await res.json();
+                console.log('Puzzle attempt recorded:', data);
+            } catch (err) {
+                console.error('Failed to record puzzle attempt:', err);
+            }
+        }
+
+        async function updateStudentXP(xpEarned) {
+            try {
+                const token = localStorage.getItem('idToken');
+                const res = await fetch('/update_student_xp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        xp: xpEarned
+                    })
+                });
+
+                const data = await res.json();
+                console.log('XP updated:', data);
+
+                if (data.success) {
+                    XP = data.new_xp;
+                    xpCount.textContent = XP.toLocaleString();
+                    return data.new_xp;
+                }
+
+                return XP;
+            } catch (err) {
+                console.error('Failed to update XP:', err);
+                return XP;
+            }
+        }
+        function progress() {
+            const c = Object.values(solved).filter(Boolean).length;
+            const p = Math.round(c / puzzles.length * 100);
+            progressBar.style.width = p + '%';
+            progressText.textContent = p + '%';
+        }
+
+
+        function initSpeech() {
+
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SR();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = lang === 'hi' ? 'hi-IN' : (lang === 'or' ? 'en-IN' : 'en-US');
+                recognition.onresult = (e) => { const transcript = e.results[0][0].transcript.toLowerCase(); handleVoice(transcript); };
+                recognition.onerror = () => { isListening = false; hideVoice(); showMsg('🎙️ Voice failed.'); };
+                recognition.onend = () => { isListening = false; hideVoice(); };
+            }
+        }
+
+        function speak(text) {
+            if (!('speechSynthesis' in window)) return null;
+            const u = new SpeechSynthesisUtterance(text);
+            u.rate = 0.85;
+            u.lang = lang === 'hi' ? 'hi-IN' : (lang === 'or' ? 'en-IN' : 'en-US');
+            window.speechSynthesis.speak(u);
+            return u;
+        }
+
+        function listenQuestion() {
+
+            const p = cur();
+            const q = (p.q && (p.q[lang] || p.q.en)) || questionText.textContent;
+            speak(stripHtml(q) + '. ' + (T[lang].hint || 'Drag cards up/down to sort.'));
+        }
+
+        function stripHtml(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            return div.textContent || div.innerText || '';
+        }
+
+        function toggleVoice() {
+            if (!recognition) { showMsg('🎙️ Voice not supported'); return; }
+            if (isListening) { recognition.stop(); return; }
+            try {
+                recognition.lang = lang === 'hi' ? 'hi-IN' : (lang === 'or' ? 'en-IN' : 'en-US');
+                recognition.start();
+                isListening = true;
+                showVoice();
+            } catch (e) {
+                isListening = false;
+                hideVoice();
+            }
+        }
+
+        function showVoice() { voiceStatus.classList.remove('hidden'); listeningText.textContent = T[lang].labels?.voice || 'Listening...'; speakClear.textContent = 'Say numbers separated by space or say "submit"'; }
+        function hideVoice() { voiceStatus.classList.add('hidden'); }
+
+
+        function handleVoice(transcript) {
+            hideVoice();
+            const clean = transcript.replace(/[^\d\s]/g, ' ').trim();
+
+            const digits = clean.match(/\d+/g);
+            if (digits && digits.length >= 2) {
+
+                const p = cur();
+                const mapLabelToId = {};
+                p.items.forEach(it => mapLabelToId[(it.en + '').toLowerCase()] = it.id);
+
+                const seqIds = [];
+                digits.forEach(d => {
+                    const key = d.toString();
+                    const found = p.items.find(it => String(it.en) === key);
+                    if (found) seqIds.push(found.id);
+                });
+                if (seqIds.length === p.items.length) {
+                    orders[p.id] = seqIds.slice();
+                    drawList();
+                    onSubmit(false);
+                    return;
+                } else if (seqIds.length >= 2) {
+
+                    const remaining = p.items.map(it => it.id).filter(id => !seqIds.includes(id));
+                    orders[p.id] = seqIds.concat(remaining);
+                    drawList();
+                    showMsg('Sequence applied from voice');
+                    return;
+                }
+            }
+
+            if (transcript.includes('submit') || transcript.includes('send') || transcript.includes('submit now') || transcript.includes('जमा') || transcript.includes('भेज')) {
+                onSubmit();
+                return;
+            }
+
+            // fallback: try mapping words for small numbers (5,9,15,17,23,28,42,67)
+            const wordToDigit = {
+                'five': '5', 'nine': '9', 'fifteen': '15', 'seventeen': '17', 'twentythree': '23', 'twenty three': '23', 'twentyeight': '28', 'twenty eight': '28', 'forty two': '42', 'forty-two': '42', 'sixty seven': '67', 'sixty-seven': '67',
+                'पाँच': '5', 'नौ': '9', 'पंद्रह': '15', 'सत्रह': '17', 'तेईस': '23', 'तेईस': '23', 'अट्ठाइस': '28', 'बेतीस': '28'
+            };
+            const words = transcript.split(/\s+/);
+            const foundDigits = [];
+            words.forEach(w => {
+                const key = w.replace(/[^a-z0-9\u0900-\u097F\-]/gi, '').toLowerCase();
+                if (wordToDigit[key]) foundDigits.push(wordToDigit[key]);
+            });
+            if (foundDigits.length >= 2) {
+                const p = cur();
+                const seqIds = [];
+                foundDigits.forEach(d => {
+                    const f = p.items.find(it => String(it.en) === d);
+                    if (f) seqIds.push(f.id);
+                });
+                if (seqIds.length) { orders[p.id] = seqIds.concat(p.items.map(it => it.id).filter(id => !seqIds.includes(id))); drawList(); showMsg('Sequence applied from voice'); return; }
+            }
+
+            // if nothing matched:
+            showMsg('❌ Could not parse voice — try saying numbers like "15 28 42 67" or say "submit"');
+            speak('Voice not recognized, try again');
+        }
+
+        /* -------------------------
+           Small UI helpers
+           ------------------------- */
+        function showMsg(msg, type = 'info') {
+            const bg = type === 'success' ? 'bg-green-500' : (type === 'error' ? 'bg-red-500' : 'bg-gray-800');
+            const div = document.createElement('div');
+            div.className = `fixed bottom-24 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-xl text-white font-semibold z-50 text-sm ${bg}`;
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 2500);
+        }
+
+        /* -------------------------
+           Wire controls & events
+           ------------------------- */
+        $('shuffleBtn').addEventListener('click', () => { orders[cur().id] = cur().items.map(i => i.id).sort(() => Math.random() - .5); solved[cur().id] = false; render(); });
+        $('resetBtn').addEventListener('click', () => { orders[cur().id] = [...cur().correct]; solved[cur().id] = false; render(); });
+        $('submitBtn').addEventListener('click', () => onSubmit(true));
+        $('prevBtn').addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+        $('nextBtnTop').addEventListener('click', () => onNext());
+        $('restartAll').addEventListener('click', () => { orders = {}; solved = {}; idx = 0; initOrders(); render(); });
+        langSel.addEventListener('change', e => setLang(e.target.value));
+
+
+
+        function render() {
+            const p = cur();
+            stepNow.textContent = String(idx + 1);
+            stepTotal.textContent = String(puzzles.length);
+            questionText.innerHTML = p.q[lang] || p.q.en;
+            hintText.textContent = T[lang].hint;
+            $('subjectBadge').textContent = T[lang].subject;
+
+            if (!orders[p.id]) orders[p.id] = p.items.map(i => i.id).sort(() => Math.random() - .5);
+            drawList();
+            hideResult();
+            progress();
+            startTimer();
+        }
+
+
+        window.addEventListener('load', async function () {
+
+            const token = localStorage.getItem('idToken');
+            if (!token) {
+                window.location.href = '/signup';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    localStorage.removeItem('idToken');
+                    window.location.href = '/signup';
+                    return;
+                }
+
+
+                await loadQuizFromFirestore();
+                setTimeout(() => speak(T[lang].welcome), 800);
+
+            } catch (err) {
+                console.error('Auth error:', err);
+                localStorage.removeItem('idToken');
+                window.location.href = '/signup';
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+}

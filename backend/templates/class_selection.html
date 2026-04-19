@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShikshaDrill - Gamified Learning</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6, #6366f1);
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto; /* Allow scrolling */
+      position: relative; /* For particles */
+    }
+
+    header {
+      margin-top: 30px;
+      font-size: 3rem;
+      font-weight: bold;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+      text-shadow: 2px 2px 12px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      z-index: 10;
+    }
+    header span.emoji {
+      font-size: 2.5rem;
+      animation: bounce 1.5s infinite alternate;
+    }
+    header span.emoji:nth-child(3) { animation-delay: 0.5s; }
+
+    @keyframes bounce {
+      0% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-10px) scale(1.1); }
+      100% { transform: translateY(0) scale(1); }
+    }
+
+    .tagline {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-top: 8px;
+      color: #fff;
+      z-index: 10;
+    }
+
+    h2 {
+      margin: 25px 0 15px 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      z-index: 10;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      width: 90%;
+      max-width: 800px;
+      margin: 0 auto 40px auto;
+      z-index: 10;
+      position: relative;
+    }
+
+    .option-btn {
+      font-family: "Poppins", sans-serif;
+      border: none;
+      border-radius: 18px;
+      padding: 40px 20px;
+      font-size: 1.6rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      text-decoration: none;
+      display: block;
+      color: #fff;
+      position: relative; /* above particles */
+    }
+    .option-btn span {
+      display: block;
+      font-size: 1.1rem;
+      color: #f0f0f0;
+      margin-top: 8px;
+      font-weight: 400;
+    }
+    .option-btn:hover {
+      transform: translateY(-6px) scale(1.07);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+    }
+
+    .emoji-btn {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* Different Colors for Classes */
+    .class6 { background: #2563EB; } /* Blue */
+    .class7 { background: #059669; } /* Green */
+    .class8 { background: #F97316; } /* Orange */
+    .class9 { background: #EC4899; } /* Pink */
+    .class10 { background: #14B8A6; } /* Teal */
+    .class11 { background: #4F46E5; } /* Indigo */
+    .class12 { background: #F97316; } /* Red */
+
+    /* Floating particles behind everything */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0; /* Behind content */
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(100vh) scale(0.5); opacity: 0.8; }
+      to { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle" style="width:6px; height:6px; left:10%; animation-duration:12s;"></div>
+    <div class="particle" style="width:8px; height:8px; left:30%; animation-duration:15s;"></div>
+    <div class="particle" style="width:5px; height:5px; left:50%; animation-duration:18s;"></div>
+    <div class="particle" style="width:7px; height:7px; left:70%; animation-duration:20s;"></div>
+    <div class="particle" style="width:6px; height:6px; left:85%; animation-duration:25s;"></div>
+  </div>
+
+  <header>
+    <span class="emoji">📘</span>
+    ShikshaDrill
+    <span class="emoji">🎓</span>
+  </header>
+
+  <div class="tagline">Shiksha Har Gaon Tak 🚀</div>
+
+  <h2>Choose Class</h2>
+  <div class="grid">
+    <a href="homepage_for_students.html" class="option-btn class6" data-class="6"><span class="emoji-btn">📚</span>Class 6 <span>कक्षा 6</span></a>
+    <a href="homepage_for_students.html" class="option-btn class7" data-class="7"><span class="emoji-btn">✏</span>Class 7 <span>कक्षा 7</span></a>
+    <a href="homepage_for_students.html" class="option-btn class8" data-class="8"><span class="emoji-btn">📖</span>Class 8 <span>कक्षा 8</span></a>
+    <a href="homepage_for_students.html" class="option-btn class9" data-class="9"><span class="emoji-btn">🧮</span>Class 9 <span>कक्षा 9</span></a>
+    <a href="homepage_for_students.html" class="option-btn class10" data-class="10"><span class="emoji-btn">🔬</span>Class 10 <span>कक्षा 10</span></a>
+    <a href="homepage_for_students.html" class="option-btn class11" data-class="11"><span class="emoji-btn">🧪</span>Class 11 <span>कक्षा 11</span></a>
+    <a href="homepage_for_students.html" class="option-btn class12" data-class="12"><span class="emoji-btn">🎓</span>Class 12 <span>कक्षा 12</span></a>
+
+  </div>
+
+<script>
+document.querySelectorAll('.option-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.preventDefault(); 
+    const selectedClass = btn.getAttribute('data-class'); 
+    localStorage.setItem('selectedClass', selectedClass); 
+
+    if (selectedClass === '6') {
+      window.location.href = '/student'; // Class 6 homepage
+    } else {
+      alert(`Class ${selectedClass} content is coming soon!`);
+      // In future, i need to replace this with:
+      // window.location.href = `/class${selectedClass}/homepage.html`;
+    }
+  });
+});
+</script>
+
+</body>
+</html>
+

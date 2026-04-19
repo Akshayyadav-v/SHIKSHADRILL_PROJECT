@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login & Signup</title>
+     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      color: #1e1b4b;
+    }
+
+    /* Animated Gradient Background */
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(270deg, #6366f1, #9333ea, #4f46e5, #6366f1);
+      background-size: 400% 400%;
+      animation: gradientMove 12s ease infinite;
+      z-index: 0;
+    }
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(100vh) scale(0.5); opacity: 0.8; }
+      to { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* Card */
+    .card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      max-width: 900px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(50px);
+      animation: fadeUp 1s ease forwards;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    .left, .right { padding: 40px; position: relative; overflow: hidden; }
+
+    /* Headings */
+    .left h2, .right h2 {
+      font-family: "Poppins", sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .right h2 { color: #ffffff; }
+
+    .left p { color: #4b5563; margin-bottom: 25px; }
+
+    .roles { display: flex; gap: 10px; margin: 20px 0; }
+    .role-btn {
+      flex: 1; padding: 12px; border-radius: 12px; border: none;
+      cursor: pointer; font-size: 15px; font-weight: bold;
+      background: #f3f4f6; transition: all 0.3s ease;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      color: #374151;
+    }
+    .role-btn:hover { background: #e0e7ff; }
+    .role-btn.active {
+      background: linear-gradient(to right, #2563eb, #4f46e5, #9333ea);
+      color: white; box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
+    }
+
+    .input-group { margin-bottom: 18px; }
+    .input-group label { display: block; font-size: 14px; margin-bottom: 6px; color: #374151; }
+    .input-group input {
+      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #d1d5db;
+      font-size: 14px; transition: all 0.3s ease;
+    }
+    .input-group input:focus {
+      outline: none; border-color: #6366f1;
+      box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+    }
+
+    .options {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px; margin-bottom: 15px; color: #4b5563;
+    }
+    .options a {
+      text-decoration: none; color: #4f46e5; font-weight: 500; transition: color 0.3s ease;
+    }
+    .options a:hover { color: #312e81; }
+
+    .btn-primary {
+      width: 100%; background: linear-gradient(to right, #2563eb, #4f46e5, #9333ea);
+      color: white; border: none; padding: 14px;
+      border-radius: 12px; font-size: 16px; cursor: pointer; font-weight: bold;
+      margin-top: 10px; transition: all 0.3s ease;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(79, 70, 229, 0.4); }
+
+    .right {
+      background: linear-gradient(to right, #2563eb, #4f46e5, #9333ea);
+      color: white; display: flex; flex-direction: column;
+      justify-content: center; text-align: center;
+      animation: floaty 6s ease-in-out infinite;
+      position: relative; overflow: hidden;
+    }
+    .right p { font-size: 15px; line-height: 1.6; opacity: 0.9; }
+
+    @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+
+    @media (max-width: 768px) {
+      .card { grid-template-columns: 1fr; }
+      .right { display: none; }
+    }
+
+    /* Emoji floating animation */
+    .emoji {
+      position: absolute; opacity: 0.7; animation: floatEmoji 10s linear infinite;
+    }
+    @keyframes floatEmoji {
+      0% { transform: translateY(100%) scale(0.8); opacity: 0; }
+      30% { opacity: 1; }
+      50% { transform: translateY(-20%) scale(1.1); }
+      70% { opacity: 1; }
+      100% { transform: translateY(-120%) scale(1.2); opacity: 0; }
+    }
+
+    .form-container { display: none; }
+    .form-container.active { display: block; animation: fadeUp 0.6s ease forwards; }
+    .teacher-only, .student-only { display: none; }
+    .active-role.student .student-only { display: block; }
+    .active-role.teacher .teacher-only { display: block; }
+
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 999; }
+    .modal-content {
+      background: #fff; padding: 30px 40px; border-radius: 15px;
+      text-align: center; animation: scaleUp 0.5s ease forwards;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .modal-content h2 { color: #4f46e5; font-size: 26px; margin-bottom: 10px; }
+    @keyframes scaleUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    </style>
+  </head>
+  <body>
+
+    <!-- Floating Particles -->
+  <div class="particles">
+    <div class="particle" style="width:6px; height:6px; left:10%; animation-duration:12s;"></div>
+    <div class="particle" style="width:8px; height:8px; left:30%; animation-duration:15s;"></div>
+    <div class="particle" style="width:5px; height:5px; left:50%; animation-duration:18s;"></div>
+    <div class="particle" style="width:7px; height:7px; left:70%; animation-duration:20s;"></div>
+    <div class="particle" style="width:6px; height:6px; left:85%; animation-duration:25s;"></div>
+  </div>
+
+    <div class="card">
+
+      <!-- Left Section -->
+      <div class="left">
+
+        <!-- Floating Emojis -->
+      <div class="emoji" style="left: 10%; font-size: 24px; animation-delay: 0s;">🎓</div>
+      <div class="emoji" style="left: 30%; font-size: 30px; animation-delay: 2s;">📚</div>
+      <div class="emoji" style="left: 55%; font-size: 28px; animation-delay: 4s;">🎮</div>
+      <div class="emoji" style="left: 75%; font-size: 26px; animation-delay: 6s;">🧩</div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="form-container active active-role student">
+          <h2>Login</h2>
+          <p>Don’t have an account yet? <a href="#" onclick="toggleForm('signupForm')"><b>Sign Up</b></a></p>
+
+          <div class="roles">
+            <button type="button" class="role-btn active" onclick="setRole(this, 'student','loginForm')">🎓 Student</button>
+            <button type="button" class="role-btn" onclick="setRole(this, 'teacher','loginForm')">👩 Teacher</button>
+          </div>
+
+          <!-- Student login -->
+          <div class="student-only">
+            <div class="input-group">
+              <label><b>Email Id</b></label>
+              <input type="email" placeholder="Enter your email" />
+            </div>
+
+            <div class="input-group">
+              <label><b>Password</b></label>
+              <input type="password" placeholder="Enter your password" />
+            </div>
+          </div>
+
+          <!-- Teacher login -->
+          <div class="teacher-only">
+            <div class="input-group">
+              <label><b>Email Id</b></label>
+              <input type="text" placeholder="Teacher email" />
+            </div>
+            <div class="input-group"><label><b>Password</b></label>
+              <input type="password" placeholder="Teacher password" /></div>
+          </div>
+
+          <div class="options">
+            <label> <input type="checkbox" /> Remember Me </label>
+            <a href="#">Forgot Password?</a>
+          </div>
+
+          <!-- Role-based redirect for login -->
+          <button class="btn-primary" onclick="handleRedirect('loginForm')">Login</button>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" class="form-container active-role student">
+          <h2>Sign Up</h2>
+          <p>Already have an account? <a href="#" onclick="toggleForm('loginForm')"><b>Login</b></a></p>
+
+          <div class="roles">
+            <button type="button" class="role-btn active" onclick="setRole(this, 'student','signupForm')">🎓 Student</button>
+            <button type="button" class="role-btn" onclick="setRole(this, 'teacher','signupForm')">👩 Teacher</button>
+          </div>
+
+          <!-- Student signup -->
+          <div class="student-only">
+            <div class="input-group">
+              <label><b>Full Name</b></label>
+              <input type="text" placeholder="Enter your full name" />
+            </div>
+
+            <div class="input-group">
+              <label><b>Email Id</b></label>
+              <input type="email" placeholder="Enter your email" />
+            </div>
+
+            <div class="input-group">
+              <label><b>Password</b></label>
+              <input type="password" placeholder="Create a password" />
+            </div>
+
+            <div class="input-group">
+              <label><b>Confirm Password</b></label>
+              <input type="password" placeholder="Confirm your password" />
+            </div>
+          </div>
+
+          <!-- Teacher signup -->
+          <div class="teacher-only">
+            <div class="input-group">
+              <label><b>Full Name</b></label>
+              <input type="text" placeholder="Teacher full name" />
+            </div>
+            <div class="input-group">
+              <label><b>Email ID</b></label>
+              <input type="text" placeholder="Teacher email" />
+            </div>
+             <div class="input-group"><label><b>Password</b></label>
+             <input type="password" placeholder="Create a Password" /></div>
+          </div>
+
+          <!-- Role-based redirect for signup -->
+          <button class="btn-primary" onclick="handleRedirect('signupForm')">Sign Up</button>
+        </div>
+      </div>
+
+      <!-- Right Section -->
+      <div class="right">
+        <h2 id="welcome-title">Welcome Back!</h2>
+        <p id="welcome-text">Join the journey of learning and teaching with our platform.<br/>Empowering students and teachers for a brighter future.</p>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal">
+      <div class="modal-content">
+        <h2 id="successMessage">Success!</h2>
+        <p>Redirecting you to your dashboard...</p>
+      </div>
+    </div>
+
+    <!-- Confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+      function setRole(button, role, formId) {
+        const form = document.getElementById(formId);
+        form.classList.remove("student", "teacher");
+        form.classList.add(role);
+
+        // update button states
+        button.parentElement.querySelectorAll(".role-btn").forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        const title = document.getElementById("welcome-title");
+        const text = document.getElementById("welcome-text");
+
+        if (role === "student") {
+          title.textContent = "Hello, Student!";
+          text.innerHTML = "Keep learning and exploring with us.<br>Grow your knowledge every day!";
+        } else {
+          title.textContent = "Hello, Teacher!";
+          text.innerHTML = "Inspire your students and share knowledge.<br>Together we shape the future!";
+        }
+      }
+
+      function toggleForm(formId) {
+        document.querySelectorAll(".form-container").forEach((form) => form.classList.remove("active"));
+        document.getElementById(formId).classList.add("active");
+      }
+
+      // 🎉 Confetti animation
+      function launchConfetti() {
+        const duration = 1.5 * 1000;
+        const end = Date.now() + duration;
+
+        (function frame() {
+          confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+
+          if (Date.now() < end) {
+            requestAnimationFrame(frame);
+          }
+        })();
+      }
+
+      async function handleRedirect(formId) {
+  const form = document.getElementById(formId);
+  const modal = document.getElementById("successModal");
+  const msg = document.getElementById("successMessage");
+
+  let url = "";
+  let body = {};
+  let target = "";
+
+  if (formId === "signupForm") {
+    // 🎓 Student signup
+    if (form.classList.contains("student")) {
+      url = "/api/signup";
+      body = {
+        name: form.querySelector("input[placeholder='Enter your full name']").value,
+        email: form.querySelector("input[placeholder='Enter your email']").value,
+        password: form.querySelector("input[placeholder='Create a password']").value,
+        role: "student"
+      };
+      target = "/class_selection";
+    }
+    // 👩 Teacher signup
+    else if (form.classList.contains("teacher")) {
+      url = "/api/signup";
+      body = {
+        name: form.querySelector("input[placeholder='Teacher full name']").value,
+        email: form.querySelector("input[placeholder='Teacher email']").value,
+        password: form.querySelector("input[placeholder='Create a Password']").value,
+        role: "teacher"
+      };
+      target = "/teacher";
+    }
+  }
+
+  if (formId === "loginForm") {
+    // 🎓 Student login
+    if (form.classList.contains("student")) {
+      url = "/api/login";
+      body = {
+        email: form.querySelector("input[placeholder='Enter your email']").value,
+        password: form.querySelector("input[placeholder='Enter your password']").value,
+      };
+      target = "/class_selection";
+    }
+    // 👩 Teacher login
+    else if (form.classList.contains("teacher")) {
+      url = "/api/login";
+      body = {
+        email: form.querySelector("input[placeholder='Teacher email']").value,
+        password: form.querySelector("input[placeholder='Teacher password']").value,
+      };
+      target = "/teacher";
+    }
+  }
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // ✅ Save token for next time
+      if (data.idToken) {
+        localStorage.setItem("idToken", data.idToken);
+      }
+
+      msg.textContent = formId === "loginForm"
+        ? (form.classList.contains("student") ? "Student Login Successful!" : "Teacher Login Successful!")
+        : (form.classList.contains("student") ? "Student Sign Up Completed!" : "Teacher Sign Up Completed!");
+
+      // Show modal + confetti
+      modal.style.display = "flex";
+      launchConfetti();
+
+      setTimeout(() => {
+        window.location.href = target;
+      }, 2000);
+    } else {
+      alert("Error: " + (data.error || "Something went wrong"));
+    }
+  } catch (err) {
+    alert("Request failed: " + err.message);
+  }
+}
+
+    </script>
+  </body>
+</html>

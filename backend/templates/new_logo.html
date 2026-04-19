@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShikshaDrill - Splash Screen</title>
+  <style>
+    :root {
+      --primary-blue: #3B82F6;
+      --primary-blue-dark: #1D4ED8;
+      --glow-blue: #1E90FF;
+      --glow-white: #FFFFFF;
+      --background-dark-start: #0A0A0A;
+      --background-dark-end: #1A1A1A;
+      --text-white: #FFFFFF;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --logo-size: 120px;
+      --welcome-text-size: 24px;
+      --logo-pop-duration: 0.8s;
+      --typewriter-letter-delay: 0.07s;
+      --cursor-blink-duration: 0.5s;
+      --glow-pulse-duration: 1.2s;
+      --breathing-duration: 2s;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-family);
+      overflow: hidden;
+      height: 100vh;
+      background: linear-gradient(135deg, var(--background-dark-start) 0%, var(--background-dark-end) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .splash-frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .app-logo {
+      width: var(--logo-size);
+      height: var(--logo-size);
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32px;
+      cursor: pointer;
+      transform: scale(0.5);
+      opacity: 0;
+      animation: logoPopIn var(--logo-pop-duration) ease-in-out forwards;
+    }
+
+    .app-logo.glowing {
+      animation:
+        logoPopIn var(--logo-pop-duration) ease-in-out forwards,
+        glowPulse var(--glow-pulse-duration) ease-in-out infinite var(--logo-pop-duration),
+        breathingScale var(--breathing-duration) ease-in-out infinite var(--logo-pop-duration);
+    }
+
+    .app-logo:hover.glowing {
+      box-shadow:
+        0 0 30px rgba(30, 144, 255, 1),
+        0 0 60px rgba(30, 144, 255, 0.8),
+        0 0 90px rgba(30, 144, 255, 0.6),
+        0 0 120px rgba(255, 255, 255, 0.5);
+    }
+
+    .logo-text { font-size: 36px; font-weight: bold; color: var(--text-white); }
+
+    .welcome-text-container { height: 40px; display: flex; align-items: center; justify-content: center; }
+    .welcome-text { color: var(--text-white); font-size: var(--welcome-text-size); opacity: 0; }
+    .welcome-text.typing { opacity: 1; }
+    .cursor { color: var(--text-white); font-size: var(--welcome-text-size); margin-left: 2px; animation: cursorBlink var(--cursor-blink-duration) infinite; }
+
+    .splash-frame::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(30,144,255,0.08) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: backgroundGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoPopIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(30,144,255,0.6);} 50% { box-shadow: 0 0 60px rgba(30,144,255,0.8);} }
+    @keyframes breathingScale { 0%,100% { transform: scale(1);} 50% { transform: scale(1.05);} }
+    @keyframes cursorBlink { 0%,50% { opacity: 1;} 51%,100% { opacity: 0;} }
+    @keyframes backgroundGlow { 0% { opacity: 0.3; transform: translate(-50%,-50%) scale(1);} 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(1.2);} }
+
+    @media (max-width: 768px) {
+      :root { --logo-size: 100px; --welcome-text-size: 20px; }
+      .logo-text { font-size: 28px; }
+    }
+    @media (max-width: 480px) {
+      :root { --logo-size: 90px; --welcome-text-size: 18px; }
+      .logo-text { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="splash-frame" id="splashFrame">
+    <div class="app-logo" id="appLogo"><div class="logo-text">SD</div></div>
+    <div class="welcome-text-container">
+      <div class="welcome-text" id="welcomeText"></div>
+      <span class="cursor" id="cursor">|</span>
+    </div>
+  </div>
+
+  <script>
+  const text = "Welcome to ShikshaDrill";
+  const welcomeElement = document.getElementById('welcomeText');
+  const cursorElement = document.getElementById('cursor');
+  const logo = document.getElementById('appLogo');
+  let currentIndex = 0;
+
+  function typeWriter() {
+    if (currentIndex < text.length) {
+      welcomeElement.textContent += text.charAt(currentIndex);
+      currentIndex++;
+      setTimeout(typeWriter, 70);
+    } else {
+      setTimeout(() => logo.classList.add('glowing'), 300);
+
+      // ⏳ Auto redirect after 2.5s once text is typed
+      setTimeout(() => {
+         window.location.href = "/signup"; 
+      }, 2500);
+    }
+  }
+
+  setTimeout(() => {
+    welcomeElement.classList.add('typing');
+    typeWriter();
+  }, 800);
+
+  // Optional: allow clicking logo to skip instantly
+  logo.addEventListener("click", () => {
+    window.location.href = "/signup";
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShikshaDrill - Teacher Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for simple analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .game-title {
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+      }
+
+      50% {
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.8);
+      }
+    }
+
+    .chart-bar {
+      transition: height 0.8s ease-in-out;
+    }
+
+    .notification-badge {
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      20%,
+      50%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-10px);
+      }
+
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* small toast styles for slide in/out */
+    .toast-slide {
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      transform: translateX(20px);
+      opacity: 0;
+    }
+
+    .toast-slide.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen transition-colors" id="bodyRoot">
+
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-2xl">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+          <div
+            class="w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+            <span class="text-white font-bold text-xl">🎓</span>
+          </div>
+          <div>
+            <h1 class="game-title text-2xl text-white">ShikshaDrill</h1>
+            <p class="text-blue-100 text-sm">Teacher Dashboard</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-6">
+          <!-- Notifications -->
+          <div class="relative">
+            <button id="notifBtn"
+              class="relative p-2 bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-200"
+              onclick="toggleNotifications()">
+              <span class="text-xl">🔔</span>
+              <div id="notifBadge"
+                class="notification-badge absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold">
+                3</div>
+            </button>
+          </div>
+
+          <!-- Theme toggle -->
+          <div class="flex items-center space-x-2">
+            <button id="themeToggle" class="bg-white bg-opacity-20 p-2 rounded-lg hover:bg-opacity-30"
+              title="Toggle dark mode">🌙</button>
+          </div>
+
+          <!-- Profile -->
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full flex items-center justify-center">
+              <span class="text-white font-bold">👩‍🏫</span>
+            </div>
+            <div class="text-right">
+              <p id="teacherName" class="font-semibold">Loading...</p>
+              <p id="teacherSubject" class="text-blue-100 text-xs"> Role loading... </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <div class="flex gap-6">
+      <!-- Left sidebar (quick links) -->
+      <aside class="w-64 space-y-6">
+        <div class="bg-white rounded-2xl shadow-lg p-4">
+          <h3 class="text-lg font-bold text-gray-800 mb-3">Quick Links</h3>
+          <div class="flex flex-col space-y-2">
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('dashboard')">🏠
+              Dashboard</button>
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('students')">👥
+              Students</button>
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('quizzes')">➕ Create
+              Quiz</button>
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('homework')">📚
+              Homework</button>
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('analytics')">📈
+              Analytics</button>
+            <button class="text-left px-3 py-2 rounded-lg hover:bg-gray-100" onclick="navTo('announcements')">📢
+              Announcements</button>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-lg p-4">
+          <h3 class="text-lg font-bold text-gray-800 mb-3">Quick Actions</h3>
+          <div class="grid grid-cols-1 gap-3">
+            <button
+              class="pulse-glow bg-gradient-to-br from-blue-500 to-blue-600 text-white p-3 rounded-xl font-semibold text-sm hover:scale-105"
+              onclick="navTo('quizzes')">➕ Create Quiz</button>
+            <button
+              class="bg-gradient-to-br from-green-500 to-green-600 text-white p-3 rounded-xl font-semibold text-sm hover:scale-105"
+              onclick="navTo('analytics')">📊 View Reports</button>
+            <button
+              class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-3 rounded-xl font-semibold text-sm hover:scale-105"
+              onclick="navTo('students')">👥 Students</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main single-page area -->
+      <section class="flex-1 space-y-6">
+        <!-- Dashboard view -->
+        <div id="page-dashboard" class="space-y-6">
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card-hover bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-blue-100 text-sm font-medium">Total Students</p>
+                  <p id="statStudents" class="text-3xl font-bold">0</p>
+                  <p class="text-blue-200 text-xs mt-1">🎯 Start adding students</p>
+                </div>
+                <div class="text-4xl opacity-80">👥</div>
+              </div>
+            </div>
+
+            <div class="card-hover bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-green-100 text-sm font-medium">Active Quizzes</p>
+                  <p id="statQuizzes" class="text-3xl font-bold">0</p>
+                  <p class="text-green-200 text-xs mt-1">📝 Create your first quiz</p>
+                </div>
+                <div class="text-4xl opacity-80">📝</div>
+              </div>
+            </div>
+
+            <div
+              class="card-hover bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-2xl shadow-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-purple-100 text-sm font-medium">Avg Score</p>
+                  <p id="statAvg" class="text-3xl font-bold">0%</p>
+                  <p class="text-purple-200 text-xs mt-1">🎯 No data yet</p>
+                </div>
+                <div class="text-4xl opacity-80">⭐</div>
+              </div>
+            </div>
+
+            <div class="card-hover bg-gradient-to-br from-orange-500 to-red-500 text-white p-6 rounded-2xl shadow-lg">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-orange-100 text-sm font-medium">Assignments</p>
+                  <p id="statHomeworks" class="text-3xl font-bold">0</p>
+                  <p class="text-orange-200 text-xs mt-1">📚 Create assignments</p>
+                </div>
+                <div class="text-4xl opacity-80">📋</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent / quick chart -->
+          <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                <span class="mr-2">📈</span> Class Performance
+              </h2>
+              <div class="flex items-center gap-3">
+                <select id="rangeSelect" class="bg-gray-100 px-3 py-2 rounded-lg text-sm font-medium"
+                  onchange="renderAnalyticsChart()">
+                  <option value="7">Last 7 days</option>
+                  <option value="30">Last 30 days</option>
+                  <option value="semester">This semester</option>
+                </select>
+                <button class="px-3 py-2 bg-blue-500 text-white rounded-lg"
+                  onclick="renderAnalyticsChart()">Refresh</button>
+              </div>
+            </div>
+
+            <canvas id="analyticsChart" height="120"></canvas>
+          </div>
+
+          <!-- Recent activities -->
+          <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+              <span class="mr-2">🕒</span> Recent Activities
+            </h2>
+            <div id="recentActivities" class="space-y-4">
+              <!-- dynamically filled -->
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Students page -->
+        <!-- Students page -->
+        <div id="page-students" class="hidden bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+              <span class="mr-2">👥</span> Registered Students
+            </h2>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" onclick="loadAllStudents()">
+              🔄 Refresh
+            </button>
+          </div>
+
+          <!-- Simple Search -->
+          <div class="mb-4">
+            <input type="text" id="studentSearch" class="border p-2 rounded-lg w-full"
+              placeholder="Search by name or email..." oninput="filterStudents()" />
+          </div>
+
+          <!-- Student list -->
+          <div id="studentList" class="space-y-3">
+            <p class="text-gray-500">Loading students...</p>
+          </div>
+
+          <!-- Roll Number Assignment Modal -->
+          <div id="rollNumberModal"
+            class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
+              <h3 class="text-xl font-bold mb-4">Assign Roll Number</h3>
+              <form id="rollNumberForm" onsubmit="saveRollNumber(event)" class="space-y-3">
+                <input type="hidden" id="modalStudentId" />
+                <div>
+                  <label class="text-sm font-semibold text-gray-700">Student Name</label>
+                  <input id="modalStudentName" class="border p-2 rounded-lg w-full bg-gray-100" readonly />
+                </div>
+                <div>
+                  <label class="text-sm font-semibold text-gray-700">Roll Number *</label>
+                  <input id="modalRollNumber" type="number" min="1" class="border p-2 rounded-lg w-full"
+                    placeholder="Enter roll number" required />
+                </div>
+                <div class="flex gap-2">
+                  <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex-1">Save</button>
+                  <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                    onclick="closeRollNumberModal()">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quizzes page -->
+        <!-- Quizzes page -->
+        <div id="page-quizzes" class="hidden bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="mr-2">➕</span> Create Quiz</h2>
+            <div class="flex gap-2">
+              <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg" onclick="startNewQuiz()">📝 New Normal
+                Quiz</button>
+              <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg" onclick="startNewPuzzleQuiz()">🧩 New Puzzle
+                Quiz</button>
+              <button class="px-4 py-2 bg-gray-200 rounded-lg" onclick="navTo('dashboard')">Back</button>
+            </div>
+          </div>
+
+          <!-- Quiz Type Tabs -->
+          <div class="flex gap-2 mb-4">
+            <button id="normalQuizTab" onclick="switchQuizTab('normal')"
+              class="px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+              📝 Normal Quiz
+            </button>
+            <button id="puzzleQuizTab" onclick="switchQuizTab('puzzle')"
+              class="px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white">
+              🧩 Puzzle Quiz
+            </button>
+          </div>
+
+          <!-- Quiz creator -->
+          <div id="normalQuizCreator" class="space-y-4">
+            <form id="quizMetaForm" onsubmit="createOrUpdateQuizMeta(event)" class="space-y-3">
+              <input type="hidden" id="quizId" />
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input id="quizTitle" class="border p-2 rounded-lg" placeholder="Quiz title (e.g., Algebra Basics)"
+                  required />
+                <input id="quizClass" class="border p-2 rounded-lg" placeholder="Class / Section (e.g., 8A)" />
+                <select id="quizSubject" class="border p-2 rounded-lg" required>
+                  <option value="">Select Subject</option>
+                  <option value="science">🔬 Science</option>
+                  <option value="technology">💻 Technology</option>
+                  <option value="engineering">⚙️ Engineering</option>
+                  <option value="mathematics">📐 Mathematics</option>
+                </select>
+                <select id="quizLevel" class="border p-2 rounded-lg" required>
+                  <option value="">Select Level</option>
+                  <option value="easy">🌱 Easy</option>
+                  <option value="medium">⚡ Medium</option>
+                  <option value="hard">🔥 Hard</option>
+                </select>
+
+              </div>
+              <div class="flex gap-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" type="submit">Save Quiz Info</button>
+                <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                  onclick="clearQuizCreator()">Clear</button>
+              </div>
+            </form>
+
+            <div class="border-t pt-4">
+              <h3 class="font-semibold mb-2">Questions</h3>
+              <div id="questionList" class="space-y-3"></div>
+
+              <div class="p-4 border rounded-lg">
+                <form id="questionForm" onsubmit="addQuestion(event)" class="space-y-3">
+                  <input id="qText" class="border p-2 rounded-lg w-full" placeholder="Question text" required />
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input id="optA" class="border p-2 rounded-lg" placeholder="Option A" required />
+                    <input id="optB" class="border p-2 rounded-lg" placeholder="Option B" required />
+                    <input id="optC" class="border p-2 rounded-lg" placeholder="Option C" />
+                    <input id="optD" class="border p-2 rounded-lg" placeholder="Option D" />
+                  </div>
+                  <div>
+                    <label class="text-sm">Correct Option</label>
+                    <select id="correctOpt" class="border p-2 rounded-lg w-full">
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                    </select>
+                  </div>
+                  <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-green-500 text-white rounded-lg" type="submit">Add Question</button>
+                    <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                      onclick="clearQuestionForm()">Clear</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="flex justify-end mt-4">
+                <button class="px-4 py-2 bg-purple-600 text-white rounded-lg" onclick="saveQuiz()">Save Quiz</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Puzzle Quiz Creator -->
+          <div id="puzzleQuizCreator" class="hidden space-y-4">
+            <form id="puzzleMetaForm" onsubmit="savePuzzleMeta(event)" class="space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input id="puzzleTitle" class="border p-2 rounded-lg" placeholder="Puzzle title (e.g., Number Sorting)"
+                  required />
+                <input id="puzzleClass" class="border p-2 rounded-lg" placeholder="Class / Section (e.g., 6A)" />
+                <select id="puzzleSubject" class="border p-2 rounded-lg" required>
+                  <option value="">Select Subject</option>
+                  <option value="science">🔬 Science</option>
+                  <option value="technology">💻 Technology</option>
+                  <option value="engineering">⚙️ Engineering</option>
+                  <option value="mathematics">📐 Mathematics</option>
+                </select>
+                <select id="puzzleLevel" class="border p-2 rounded-lg" required>
+                  <option value="">Select Level</option>
+                  <option value="easy">🌱 Easy</option>
+                  <option value="medium">⚡ Medium</option>
+                  <option value="hard">🔥 Hard</option>
+                </select>
+              </div>
+              <div class="flex gap-2">
+                <button class="px-4 py-2 bg-pink-600 text-white rounded-lg" type="submit">Save Puzzle Info</button>
+                <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                  onclick="clearPuzzleCreator()">Clear</button>
+              </div>
+            </form>
+
+            <div class="border-t pt-4">
+              <h3 class="font-semibold mb-2">Puzzles</h3>
+              <div id="puzzleItemList" class="space-y-3"></div>
+
+              <div class="p-4 border rounded-lg">
+                <form id="puzzleItemForm" onsubmit="addPuzzleItem(event)" class="space-y-3">
+                  <input id="puzzleQuestion" class="border p-2 rounded-lg w-full"
+                    placeholder="Puzzle instruction (e.g., Arrange in ascending order)" required />
+
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold">Items to Arrange (comma-separated)</label>
+                    <input id="puzzleItems" class="border p-2 rounded-lg w-full" placeholder="e.g., 42, 15, 67, 28"
+                      required />
+                    <p class="text-xs text-gray-500">Enter items separated by commas. Students will arrange these.</p>
+                  </div>
+
+                  <div class="space-y-2">
+                    <label class="text-sm font-semibold">Correct Order (comma-separated)</label>
+                    <input id="puzzleCorrectOrder" class="border p-2 rounded-lg w-full"
+                      placeholder="e.g., 15, 28, 42, 67" required />
+                    <p class="text-xs text-gray-500">Enter the correct order of items.</p>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-green-500 text-white rounded-lg" type="submit">Add Puzzle</button>
+                    <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                      onclick="clearPuzzleItemForm()">Clear</button>
+                  </div>
+                </form>
+              </div>
+
+              <div class="flex justify-end mt-4">
+                <button class="px-4 py-2 bg-pink-600 text-white rounded-lg" onclick="savePuzzleQuiz()">Save Puzzle
+                  Quiz</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saved quizzes -->
+          <div id="savedQuizzesWrap" class="mt-6">
+            <h3 class="font-semibold mb-3">Saved Quizzes</h3>
+            <div id="savedQuizzesList" class="space-y-3"></div>
+          </div>
+        </div>
+
+        <!-- Homework page -->
+        <div id="page-homework" class="hidden bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="mr-2">📚</span> Assign Homework
+            </h2>
+            <button class="px-4 py-2 bg-green-500 text-white rounded-lg" onclick="showHomeworkForm()">New
+              Assignment</button>
+          </div>
+
+          <div id="homeworkFormWrap" class="hidden mb-4">
+            <form id="homeworkForm" onsubmit="saveHomework(event)" class="space-y-3">
+              <input id="hwTitle" class="border p-2 rounded-lg" placeholder="Title (e.g., Chapter 3 Practice)"
+                required />
+              <textarea id="hwDesc" class="border p-2 rounded-lg w-full" placeholder="Instructions / description"
+                rows="3"></textarea>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input id="hwClass" class="border p-2 rounded-lg" placeholder="Class (e.g., 9B)" />
+                <input id="hwDue" type="date" class="border p-2 rounded-lg" />
+              </div>
+              <div class="flex gap-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg" type="submit">Assign</button>
+                <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                  onclick="hideHomeworkForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="homeworkList" class="space-y-3">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+
+        <!-- Analytics page -->
+        <div id="page-analytics" class="hidden bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="mr-2">📈</span> Analytics</h2>
+            <div class="flex gap-2">
+              <button class="px-4 py-2 bg-blue-600 text-white rounded-lg"
+                onclick="renderAnalyticsChart()">Refresh</button>
+            </div>
+          </div>
+
+          <div>
+            <canvas id="analyticsChartLarge" height="160"></canvas>
+          </div>
+        </div>
+
+        <!-- Announcements page -->
+        <div id="page-announcements" class="hidden bg-white rounded-2xl shadow-lg p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center"><span class="mr-2">📢</span> Announcements
+            </h2>
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-lg" onclick="showAnnouncementForm()">New</button>
+          </div>
+
+          <div id="announceFormWrap" class="hidden mb-4">
+            <form id="announceForm" onsubmit="saveAnnouncement(event)" class="space-y-3">
+              <input id="announceTitle" class="border p-2 rounded-lg" placeholder="Title" required />
+              <textarea id="announceBody" class="border p-2 rounded-lg w-full" placeholder="Message" rows="3"
+                required></textarea>
+              <div class="flex gap-2">
+                <button class="px-4 py-2 bg-green-500 text-white rounded-lg" type="submit">Post</button>
+                <button type="button" class="px-4 py-2 bg-gray-200 rounded-lg"
+                  onclick="hideAnnouncementForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="announceList" class="space-y-3"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Notification Panel -->
+  <div id="notificationPanel"
+    class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform translate-x-full transition-transform duration-300 z-50">
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-gray-800">Notifications</h3>
+        <button onclick="toggleNotifications()" class="text-gray-500 hover:text-gray-700">
+          <span class="text-xl">✕</span>
+        </button>
+      </div>
+    </div>
+    <div class="p-6 space-y-4 overflow-y-auto h-full pb-20" id="notifContent">
+      <div class="p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div class="flex items-start space-x-3">
+          <span class="text-2xl">📝</span>
+          <div>
+            <p class="font-semibold text-gray-800">New Quiz Submission</p>
+            <p class="text-sm text-gray-600">5 students completed Physics Quiz #3</p>
+            <p class="text-xs text-gray-500 mt-1">5 minutes ago</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlays & Toast container -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden z-40" onclick="toggleNotifications()"></div>
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+  <script>
+    /* -------------------------
+       Utilities & data storage
+       ------------------------- */
+    const storage = {
+      studentsKey: 'sd_students_v1',
+      quizzesKey: 'sd_quizzes_v1',
+      homeworkKey: 'sd_homework_v1',
+      announcementsKey: 'sd_announcements_v1',
+      activitiesKey: 'sd_activities_v1'
+    };
+
+    function read(key) {
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); }
+      catch (e) { return []; }
+    }
+    function write(key, value) {
+      localStorage.setItem(key, JSON.stringify(value || []));
+    }
+
+    
+    function addActivity(text) {
+      const activities = read(storage.activitiesKey);
+      activities.unshift({ text, time: new Date().toISOString() });
+      write(storage.activitiesKey, activities.slice(0, 30));
+      renderRecentActivities();
+    }
+
+    /* -------------------------
+       Toast / Message function (fixed)
+       ------------------------- */
+    function showMessage(message, type = 'info', timeout = 3000) {
+      const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        info: 'bg-blue-500'
+      };
+      const container = document.getElementById('toastContainer');
+      const div = document.createElement('div');
+      div.className = `toast-slide ${colors[type]} text-white px-5 py-3 rounded-xl font-semibold shadow-lg`;
+      div.textContent = message;
+      container.appendChild(div);
+      
+      requestAnimationFrame(() => div.classList.add('show'));
+      setTimeout(() => {
+        div.classList.remove('show');
+        setTimeout(() => div.remove(), 350);
+      }, timeout);
+    }
+
+    /* -------------------------
+       Notification Panel toggle
+       ------------------------- */
+    function toggleNotifications() {
+      const panel = document.getElementById('notificationPanel');
+      const overlay = document.getElementById('overlay');
+      if (panel.classList.contains('translate-x-full')) {
+        panel.classList.remove('translate-x-full');
+        overlay.classList.remove('hidden');
+      } else {
+        panel.classList.add('translate-x-full');
+        overlay.classList.add('hidden');
+      }
+    }
+
+    /* -------------------------
+       Theme toggle
+       ------------------------- */
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.getElementById('bodyRoot').classList.toggle('dark-mode');
+      document.body.classList.toggle('bg-slate-900');
+      document.body.classList.toggle('text-white');
+      if (document.getElementById('bodyRoot').classList.contains('dark-mode')) {
+        showMessage('Dark theme enabled', 'info');
+        themeToggle.textContent = '☀️';
+      } else {
+        showMessage('Light theme enabled', 'info');
+        themeToggle.textContent = '🌙';
+      }
+    });
+
+    /* -------------------------
+       Single Page Navigation
+       ------------------------- */
+    function navTo(page) {
+      const pages = ['dashboard', 'students', 'quizzes', 'homework', 'analytics', 'announcements'];
+      pages.forEach(p => {
+        const el = document.getElementById('page-' + p);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById('page-' + page);
+      if (target) {
+        target.classList.remove('hidden');
+        // run page-specific functions
+        if (page === 'students') loadAllStudents();  // ✅ Load from Firestore
+        if (page === 'quizzes') renderQuizPage();
+        if (page === 'analytics') renderAnalyticsChart(true);
+        if (page === 'homework') renderHomework();
+        if (page === 'announcements') renderAnnouncements();
+      }
+    }
+
+    /* -------------------------
+       Recent activities
+       ------------------------- */
+    function renderRecentActivities() {
+      const wrap = document.getElementById('recentActivities');
+      const list = read(storage.activitiesKey);
+      wrap.innerHTML = '';
+      if (list.length === 0) {
+        wrap.innerHTML = '<p class="text-gray-500">No recent activity yet</p>';
+        return;
+      }
+      list.slice(0, 5).forEach(act => {
+        const time = new Date(act.time).toLocaleString();
+        const card = document.createElement('div');
+        card.className = 'flex items-center space-x-4 p-3 bg-blue-50 rounded-xl';
+        card.innerHTML = `<div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">✓</div>
+          <div class="flex-1">
+            <p class="font-semibold text-gray-800">${act.text}</p>
+            <p class="text-xs text-gray-500">${time}</p>
+          </div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    /* -------------------------
+   Students Management - Load from Firestore
+   ------------------------- */
+    let allStudentsData = [];
+
+    async function loadAllStudents() {
+      const wrap = document.getElementById('studentList');
+      wrap.innerHTML = '<p class="text-gray-500">Loading students...</p>';
+
+      try {
+        const token = localStorage.getItem('idToken');
+        const res = await fetch('/get_all_students', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch students');
+        }
+
+        const data = await res.json();
+        console.log('Students data:', data);
+
+        if (!data.success || !data.students || data.students.length === 0) {
+          wrap.innerHTML = '<p class="text-gray-500">No students registered yet.</p>';
+          document.getElementById('statStudents').textContent = '0';
+          return;
+        }
+
+        allStudentsData = data.students;
+        renderStudents(allStudentsData);
+        document.getElementById('statStudents').textContent = allStudentsData.length;
+
+      } catch (err) {
+        console.error('Error loading students:', err);
+        wrap.innerHTML = '<p class="text-red-500">Failed to load students. Please try again.</p>';
+      }
+    }
+
+    function renderStudents(students) {
+      const wrap = document.getElementById('studentList');
+      wrap.innerHTML = '';
+
+      if (!students || students.length === 0) {
+        wrap.innerHTML = '<p class="text-gray-500">No students found.</p>';
+        return;
+      }
+
+      students.forEach((s, index) => {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl hover:shadow-md transition';
+
+        const rollNumber = s.roll_number || 'Not assigned';
+        const email = s.email || 'No email';
+        const xp = s.xp || 0;
+
+        el.innerHTML = `
+      <div class="flex items-center space-x-4 flex-1">
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+          ${s.name ? s.name.charAt(0).toUpperCase() : '?'}
+        </div>
+        <div class="flex-1">
+          <p class="font-bold text-gray-800 text-lg">${s.name || 'Unknown'}</p>
+          <p class="text-sm text-gray-600">📧 ${email}</p>
+          <p class="text-xs text-gray-500 mt-1">
+            📝 Roll: <span class="font-semibold">${rollNumber}</span> | 
+            🪙 XP: <span class="font-semibold">${xp}</span>
+          </p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button 
+          class="px-4 py-2 bg-green-100 hover:bg-green-200 rounded-lg text-sm text-green-700 font-semibold"
+          onclick="openRollNumberModal('${s.id}', '${s.name}', '${rollNumber}')"
+          title="Assign Roll Number">
+          ${rollNumber === 'Not assigned' ? '➕ Roll' : '✏️ Edit'}
+        </button>
+        <button 
+          class="px-4 py-2 bg-red-100 hover:bg-red-200 rounded-lg text-sm text-red-700 font-semibold"
+          onclick="deleteStudentAccount('${s.id}', '${s.name}')"
+          title="Delete Student">
+          🗑️
+        </button>
+      </div>
+    `;
+        wrap.appendChild(el);
+      });
+    }
+
+    function filterStudents() {
+      const searchTerm = document.getElementById('studentSearch').value.toLowerCase();
+
+      let filtered = allStudentsData;
+
+      // Filter by search term only
+      if (searchTerm) {
+        filtered = filtered.filter(s =>
+          (s.name && s.name.toLowerCase().includes(searchTerm)) ||
+          (s.email && s.email.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      renderStudents(filtered);
+    }
+
+    function openRollNumberModal(studentId, studentName, currentRoll) {
+      document.getElementById('rollNumberModal').classList.remove('hidden');
+      document.getElementById('modalStudentId').value = studentId;
+      document.getElementById('modalStudentName').value = studentName;
+      document.getElementById('modalRollNumber').value = currentRoll !== 'Not assigned' ? currentRoll : '';
+    }
+
+    function closeRollNumberModal() {
+      document.getElementById('rollNumberModal').classList.add('hidden');
+      document.getElementById('rollNumberForm').reset();
+    }
+
+    async function saveRollNumber(event) {
+      event.preventDefault();
+
+      const studentId = document.getElementById('modalStudentId').value;
+      const rollNumber = document.getElementById('modalRollNumber').value;
+
+      try {
+        const token = localStorage.getItem('idToken');
+        const res = await fetch('/assign_roll_number', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            student_id: studentId,
+            roll_number: rollNumber
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage('✅ Roll number assigned successfully!', 'success');
+          closeRollNumberModal();
+          await loadAllStudents();
+        } else {
+          showMessage('❌ Failed: ' + data.message, 'error');
+        }
+      } catch (err) {
+        console.error('Error saving roll number:', err);
+        showMessage('⚠️ Error saving roll number', 'error');
+      }
+    }
+
+    async function deleteStudentAccount(studentId, studentName) {
+      if (!confirm(`Are you sure you want to delete ${studentName}? This will permanently remove their account and all data.`)) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('idToken');
+        const res = await fetch(`/delete_student?id=${studentId}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage('✅ Student deleted successfully', 'success');
+          await loadAllStudents(); // Reload the list
+        } else {
+          showMessage('❌ Failed: ' + data.message, 'error');
+        }
+      } catch (err) {
+        console.error('Error deleting student:', err);
+        showMessage('⚠️ Error deleting student', 'error');
+      }
+    }
+
+
+
+    /* -------------------------
+       Quiz creation & storage
+       ------------------------- */
+    let currentQuizDraft = { id: null, title: '', class: '', questions: [] };
+
+    
+    let currentQuizType = 'normal'; 
+    let currentPuzzleQuiz = { title: '', class: '', subject: '', level: '', puzzles: [] };
+
+    function switchQuizTab(type) {
+      currentQuizType = type;
+      const normalTab = document.getElementById('normalQuizTab');
+      const puzzleTab = document.getElementById('puzzleQuizTab');
+      const normalCreator = document.getElementById('normalQuizCreator');
+      const puzzleCreator = document.getElementById('puzzleQuizCreator');
+
+      if (type === 'normal') {
+        normalTab.className = 'px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white';
+        puzzleTab.className = 'px-4 py-2 rounded-lg font-semibold bg-white text-gray-700 hover:bg-gray-100';
+        normalCreator.classList.remove('hidden');
+        puzzleCreator.classList.add('hidden');
+      } else {
+        puzzleTab.className = 'px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-pink-500 to-orange-500 text-white';
+        normalTab.className = 'px-4 py-2 rounded-lg font-semibold bg-white text-gray-700 hover:bg-gray-100';
+        puzzleCreator.classList.remove('hidden');
+        normalCreator.classList.add('hidden');
+      }
+
+      renderSavedQuizzes();
+    }
+
+    function startNewPuzzleQuiz() {
+      currentPuzzleQuiz = { title: '', class: '', subject: '', level: '', puzzles: [] };
+      switchQuizTab('puzzle');
+      document.getElementById('puzzleMetaForm').reset();
+      document.getElementById('puzzleItemList').innerHTML = '';
+      showMessage('New puzzle quiz started', 'info');
+    }
+
+    function savePuzzleMeta(e) {
+      e.preventDefault();
+      currentPuzzleQuiz.title = document.getElementById('puzzleTitle').value.trim();
+      currentPuzzleQuiz.class = document.getElementById('puzzleClass').value.trim();
+      currentPuzzleQuiz.subject = document.getElementById('puzzleSubject').value;
+      currentPuzzleQuiz.level = document.getElementById('puzzleLevel').value;
+      showMessage('Puzzle info saved. Now add puzzle items.', 'success');
+      renderPuzzleItemList();
+    }
+
+    function addPuzzleItem(e) {
+      e.preventDefault();
+      const question = document.getElementById('puzzleQuestion').value.trim();
+      const itemsStr = document.getElementById('puzzleItems').value.trim();
+      const correctOrderStr = document.getElementById('puzzleCorrectOrder').value.trim();
+
+      if (!question || !itemsStr || !correctOrderStr) {
+        showMessage('Please fill all fields', 'error');
+        return;
+      }
+
+     
+      const items = itemsStr.split(',').map(s => s.trim()).filter(s => s);
+      const correctOrder = correctOrderStr.split(',').map(s => s.trim()).filter(s => s);
+
+      if (items.length < 2) {
+        showMessage('Please provide at least 2 items', 'error');
+        return;
+      }
+
+      if (correctOrder.length !== items.length) {
+        showMessage('Correct order must have same number of items', 'error');
+        return;
+      }
+
+      const puzzle = {
+        id: 'p' + Date.now(),
+        question: question,
+        items: items.map((item, idx) => ({ id: 'n' + idx, value: item })),
+        correctOrder: correctOrder
+      };
+
+      currentPuzzleQuiz.puzzles.push(puzzle);
+      renderPuzzleItemList();
+      clearPuzzleItemForm();
+      showMessage('Puzzle item added', 'success');
+    }
+
+    function renderPuzzleItemList() {
+      const wrap = document.getElementById('puzzleItemList');
+      wrap.innerHTML = '';
+      if (!currentPuzzleQuiz.puzzles.length) {
+        wrap.innerHTML = '<p class="text-gray-500">No puzzle items yet.</p>';
+        return;
+      }
+      currentPuzzleQuiz.puzzles.forEach((p, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3 border rounded-lg';
+        card.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="font-semibold">Puzzle ${idx + 1}: ${p.question}</p>
+          <div class="text-sm text-gray-600 mt-1">Items: ${p.items.map(i => i.value).join(', ')}</div>
+          <div class="text-sm text-green-600 mt-1">Correct: ${p.correctOrder.join(', ')}</div>
+        </div>
+        <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="removePuzzleItem('${p.id}')">Remove</button>
+      </div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    function removePuzzleItem(id) {
+      if (!confirm('Remove this puzzle item?')) return;
+      currentPuzzleQuiz.puzzles = currentPuzzleQuiz.puzzles.filter(p => p.id !== id);
+      renderPuzzleItemList();
+      showMessage('Puzzle item removed', 'info');
+    }
+
+    function clearPuzzleItemForm() {
+      document.getElementById('puzzleItemForm').reset();
+    }
+
+    function clearPuzzleCreator() {
+      currentPuzzleQuiz = { title: '', class: '', subject: '', level: '', puzzles: [] };
+      document.getElementById('puzzleMetaForm').reset();
+      document.getElementById('puzzleItemList').innerHTML = '';
+      showMessage('Cleared puzzle creator', 'info');
+    }
+
+    async function savePuzzleQuiz() {
+      if (!currentPuzzleQuiz.title || !currentPuzzleQuiz.puzzles.length) {
+        showMessage('Puzzle quiz must have a title and at least one puzzle', 'error');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('idToken');
+        const teacher_id = localStorage.getItem('teacherUID');
+
+        if (!token || !teacher_id) {
+          showMessage("⚠️ Please log in again", "error");
+          window.location.href = '/signup';
+          return;
+        }
+
+        const payload = {
+          teacher_id,
+          title: currentPuzzleQuiz.title,
+          class: currentPuzzleQuiz.class,
+          subject: currentPuzzleQuiz.subject,
+          level: currentPuzzleQuiz.level,
+          puzzles: currentPuzzleQuiz.puzzles
+        };
+
+        console.log('Saving puzzle quiz:', payload);
+
+        const res = await fetch('/create_puzzle_quiz', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        console.log('Response:', data);
+
+        if (data.success) {
+          showMessage('✅ Puzzle quiz created successfully!', "success");
+          addActivity(`Created puzzle quiz: ${currentPuzzleQuiz.title}`);
+          currentPuzzleQuiz = { title: '', class: '', subject: '', level: '', puzzles: [] };
+          document.getElementById('puzzleMetaForm').reset();
+          document.getElementById('puzzleItemList').innerHTML = '';
+          renderSavedQuizzes();
+          updateStats();
+        } else {
+          showMessage("❌ Failed to save puzzle quiz: " + (data.message || 'Unknown error'), "error");
+        }
+      } catch (err) {
+        console.error('Error saving puzzle quiz:', err);
+        showMessage("⚠️ Error saving puzzle quiz", "error");
+      }
+    }
+
+    function startNewQuiz() {
+      currentQuizDraft = { id: null, title: '', class: '', level: '', subject: '', questions: [] };
+      document.getElementById('quizCreatorWrap').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('quizMetaForm').reset();
+      document.getElementById('questionList').innerHTML = '';
+      document.getElementById('quizId').value = '';
+      showMessage('New quiz started', 'info');
+    }
+
+    function createOrUpdateQuizMeta(e) {
+      e.preventDefault();
+      currentQuizDraft.title = document.getElementById('quizTitle').value.trim();
+      currentQuizDraft.class = document.getElementById('quizClass').value.trim();
+      currentQuizDraft.subject = document.getElementById('quizSubject').value;
+      currentQuizDraft.level = document.getElementById('quizLevel').value;
+
+
+      showMessage('Quiz info saved. Now add questions.', 'success');
+      renderQuestionList();
+    }
+
+    function addQuestion(e) {
+      e.preventDefault();
+      const text = document.getElementById('qText').value.trim();
+      const a = document.getElementById('optA').value.trim();
+      const b = document.getElementById('optB').value.trim();
+      const c = document.getElementById('optC').value.trim();
+      const d = document.getElementById('optD').value.trim();
+      const correct = document.getElementById('correctOpt').value;
+      if (!text || !a || !b) { showMessage('Question and at least two options required', 'error'); return; }
+      const q = { id: Date.now().toString(), text, options: { A: a, B: b, C: c, D: d }, correct };
+      currentQuizDraft.questions.push(q);
+      renderQuestionList();
+      clearQuestionForm();
+      showMessage('Question added', 'success');
+    }
+
+    function renderQuestionList() {
+      const wrap = document.getElementById('questionList');
+      wrap.innerHTML = '';
+      if (!currentQuizDraft.questions.length) {
+        wrap.innerHTML = '<p class="text-gray-500">No questions yet.</p>';
+        return;
+      }
+      currentQuizDraft.questions.forEach((q, idx) => {
+        const card = document.createElement('div');
+        card.className = 'p-3 border rounded-lg';
+        let optsHtml = '';
+        ['A', 'B', 'C', 'D'].forEach(k => {
+          if (!q.options[k]) return;
+          const star = q.correct === k ? ' • ✔' : '';
+          optsHtml += `<div class="text-sm text-gray-700">${k}. ${q.options[k]} <span class="text-green-600 font-semibold">${star}</span></div>`;
+        });
+        card.innerHTML = `<div class="flex justify-between items-start">
+            <div>
+              <p class="font-semibold">Q${idx + 1}. ${q.text}</p>
+              <div class="mt-2">${optsHtml}</div>
+            </div>
+            <div class="flex flex-col gap-2 ml-4">
+              <button class="px-3 py-1 bg-yellow-100 rounded-lg text-sm" onclick="editQuestion('${q.id}')">Edit</button>
+              <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="removeQuestion('${q.id}')">Remove</button>
+            </div>
+          </div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    function clearQuestionForm() {
+      document.getElementById('questionForm').reset();
+    }
+
+    function editQuestion(qid) {
+      const q = currentQuizDraft.questions.find(x => x.id === qid);
+      if (!q) return;
+      document.getElementById('qText').value = q.text;
+      document.getElementById('optA').value = q.options.A || '';
+      document.getElementById('optB').value = q.options.B || '';
+      document.getElementById('optC').value = q.options.C || '';
+      document.getElementById('optD').value = q.options.D || '';
+      document.getElementById('correctOpt').value = q.correct || 'A';
+      
+      currentQuizDraft.questions = currentQuizDraft.questions.filter(x => x.id !== qid);
+      renderQuestionList();
+    }
+
+    function removeQuestion(qid) {
+      if (!confirm('Remove question?')) return;
+      currentQuizDraft.questions = currentQuizDraft.questions.filter(x => x.id !== qid);
+      renderQuestionList();
+      showMessage('Question removed', 'info');
+    }
+
+    async function saveQuiz() {
+      if (!currentQuizDraft.title || !currentQuizDraft.questions.length) {
+        showMessage('Quiz must have a title and at least one question', 'error');
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('idToken');
+        const teacher_id = localStorage.getItem('teacherUID');
+
+        if (!token || !teacher_id) {
+          showMessage("⚠️ Please log in again", "error");
+          window.location.href = '/signup';
+          return;
+        }
+
+        console.log('Saving quiz - Teacher ID:', teacher_id); 
+
+        
+
+        const isEdit = currentQuizDraft.id && currentQuizDraft.id.length >= 20;
+        console.log('Is editing?', isEdit, 'ID:', currentQuizDraft.id);
+        const endpoint = isEdit ? '/update_quiz' : '/create_quiz';
+
+        const payload = {
+          teacher_id,
+          title: currentQuizDraft.title,
+          class: currentQuizDraft.class,
+          subject: currentQuizDraft.subject,
+          level: currentQuizDraft.level,
+          questions: currentQuizDraft.questions
+        };
+
+        if (isEdit) {
+          payload.quiz_id = currentQuizDraft.id;
+        }
+
+        console.log('Sending to:', endpoint);
+        console.log('Payload:', payload);
+
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        console.log('Response:', data);
+
+        if (data.success) {
+          const message = isEdit ? '✅ Quiz updated successfully!' : '✅ Quiz created successfully!';
+          showMessage(message, "success");
+          addActivity(isEdit ? `Updated quiz: ${currentQuizDraft.title}` : `Created quiz: ${currentQuizDraft.title}`);
+
+          currentQuizDraft = { id: null, title: '', class: '', level: '', subject: '', questions: [] };
+          document.getElementById('quizMetaForm').reset();
+          document.getElementById('questionList').innerHTML = '';
+          document.getElementById('quizId').value = '';
+
+          renderSavedQuizzes();
+          updateStats();
+        } else {
+          showMessage("❌ Failed to save quiz: " + (data.message || 'Unknown error'), "error");
+        }
+      } catch (err) {
+        console.error('Error saving quiz:', err);
+        showMessage("⚠️ Error saving quiz", "error");
+      }
+    }
+
+
+    async function renderSavedQuizzes() {
+      const teacher_id = localStorage.getItem("teacherUID");
+      const wrap = document.getElementById('savedQuizzesList');
+      wrap.innerHTML = '<p class="text-gray-500">Loading quizzes...</p>';
+
+      try {
+        // Fetch both normal and puzzle quizzes
+        const normalUrl = teacher_id ? `/get_quizzes?teacher_id=${teacher_id}` : '/get_quizzes';
+        const puzzleUrl = teacher_id ? `/get_puzzle_quizzes?teacher_id=${teacher_id}` : '/get_puzzle_quizzes';
+
+        console.log('Fetching quizzes from:', normalUrl, puzzleUrl);
+
+        const [normalRes, puzzleRes] = await Promise.all([
+          fetch(normalUrl),
+          fetch(puzzleUrl)
+        ]);
+
+        const normalQuizzes = await normalRes.json();
+        const puzzleQuizzes = await puzzleRes.json();
+
+        console.log('Received normal quizzes:', normalQuizzes);
+        console.log('Received puzzle quizzes:', puzzleQuizzes);
+
+        wrap.innerHTML = '';
+
+        const totalQuizzes = (Array.isArray(normalQuizzes) ? normalQuizzes.length : 0) +
+          (Array.isArray(puzzleQuizzes) ? puzzleQuizzes.length : 0);
+
+        if (totalQuizzes === 0) {
+          wrap.innerHTML = '<p class="text-gray-500">No quizzes yet. Create your first quiz!</p>';
+          document.getElementById('statQuizzes').textContent = '0';
+          return;
+        }
+
+        
+        if (currentQuizType === 'normal' && Array.isArray(normalQuizzes) && normalQuizzes.length > 0) {
+          const grouped = { easy: [], medium: [], hard: [] };
+          normalQuizzes.forEach(q => {
+            const level = q.level || 'easy';
+            if (grouped[level]) grouped[level].push(q);
+          });
+
+          Object.entries(grouped).forEach(([level, list]) => {
+            if (list.length > 0) {
+              const levelBadge = level === 'easy' ? '🌱 Easy' : level === 'medium' ? '⚡ Medium' : '🔥 Hard';
+              const levelColor = level === 'easy' ? 'bg-green-100 text-green-700' : level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+
+              const header = document.createElement('div');
+              header.className = `font-bold text-gray-700 mt-4 mb-2 ${levelColor} px-3 py-1 rounded-lg inline-block`;
+              header.textContent = '📝 Normal - ' + levelBadge;
+              wrap.appendChild(header);
+
+              list.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'p-3 bg-gray-50 rounded-xl flex justify-between items-center hover:bg-gray-100';
+                card.innerHTML = `
+              <div>
+                <p class="font-semibold text-gray-800">${q.title || 'Untitled'}</p>
+                <p class="text-sm text-gray-600">${q.class || 'All'} • ${q.questions?.length || 0} Questions</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="px-3 py-1 bg-green-100 rounded-lg text-sm" onclick="previewQuiz('${q.id}')">👁️ View</button>
+                <button class="px-3 py-1 bg-blue-100 rounded-lg text-sm" onclick="editQuizFromFirestore('${q.id}')">✏️ Edit</button>
+                <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="deleteQuizFromFirestore('${q.id}')">🗑️</button>
+              </div>`;
+                wrap.appendChild(card);
+              });
+            }
+          });
+        }
+
+        
+        if (currentQuizType === 'puzzle' && Array.isArray(puzzleQuizzes) && puzzleQuizzes.length > 0) {
+          const grouped = { easy: [], medium: [], hard: [] };
+          puzzleQuizzes.forEach(q => {
+            const level = q.level || 'easy';
+            if (grouped[level]) grouped[level].push(q);
+          });
+
+          Object.entries(grouped).forEach(([level, list]) => {
+            if (list.length > 0) {
+              const levelBadge = level === 'easy' ? '🌱 Easy' : level === 'medium' ? '⚡ Medium' : '🔥 Hard';
+              const levelColor = level === 'easy' ? 'bg-green-100 text-green-700' : level === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700';
+
+              const header = document.createElement('div');
+              header.className = `font-bold text-gray-700 mt-4 mb-2 ${levelColor} px-3 py-1 rounded-lg inline-block`;
+              header.textContent = '🧩 Puzzle - ' + levelBadge;
+              wrap.appendChild(header);
+
+              list.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'p-3 bg-pink-50 rounded-xl flex justify-between items-center hover:bg-pink-100';
+                card.innerHTML = `
+              <div>
+                <p class="font-semibold text-gray-800">${q.title || 'Untitled'}</p>
+                <p class="text-sm text-gray-600">${q.class || 'All'} • ${q.puzzles?.length || 0} Puzzles</p>
+              </div>
+              <div class="flex gap-2">
+                <button class="px-3 py-1 bg-pink-100 rounded-lg text-sm" onclick="previewPuzzleQuiz('${q.id}')">👁️ View</button>
+                <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="deletePuzzleQuiz('${q.id}')">🗑️</button>
+              </div>`;
+                wrap.appendChild(card);
+              });
+            }
+          });
+        }
+
+        document.getElementById('statQuizzes').textContent = totalQuizzes;
+      } catch (err) {
+        console.error('Error loading quizzes:', err);
+        wrap.innerHTML = '<p class="text-red-500">Failed to load quizzes</p>';
+      }
+    }
+
+    function previewPuzzleQuiz(id) {
+      window.open(`/puzzle_quiz?id=${id}`, '_blank');
+    }
+
+    async function deletePuzzleQuiz(id) {
+      if (!confirm('Are you sure you want to delete this puzzle quiz? This action cannot be undone!')) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('idToken');
+
+        if (!token) {
+          showMessage('Please log in again', 'error');
+          return;
+        }
+
+        const res = await fetch(`/delete_puzzle_quiz?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage(' Puzzle quiz deleted successfully!', 'success');
+          renderSavedQuizzes();
+          updateStats();
+        } else {
+          showMessage('Failed to delete puzzle quiz: ' + (data.message || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        console.error('Error deleting puzzle quiz:', err);
+        showMessage('Error deleting puzzle quiz', 'error');
+      }
+    }
+
+    function previewQuiz(id) {
+      window.open(`/quiz?id=${id}`, '_blank');
+    }
+
+    async function editQuizFromFirestore(id) {
+      try {
+        const res = await fetch(`/get_quiz?id=${id}`);
+        const quiz = await res.json();
+
+        if (quiz.error) {
+          showMessage('Quiz not found', 'error');
+          return;
+        }
+
+
+        navTo('quizzes');
+
+        
+        currentQuizDraft = {
+          id: quiz.id || id,
+          title: quiz.title || '',
+          class: quiz.class || '',
+          subject: quiz.subject || 'science',
+          level: quiz.level || 'easy',
+          questions: quiz.questions || []
+        };
+
+        document.getElementById('quizId').value = currentQuizDraft.id;
+        document.getElementById('quizTitle').value = currentQuizDraft.title;
+        document.getElementById('quizClass').value = currentQuizDraft.class;
+        document.getElementById('quizSubject').value = currentQuizDraft.subject;
+        document.getElementById('quizLevel').value = currentQuizDraft.level;
+
+        renderQuestionList();
+        showMessage('Quiz loaded for editing', 'info');
+        document.getElementById('quizCreatorWrap').scrollIntoView({ behavior: 'smooth' });
+
+      } catch (err) {
+        console.error('Error loading quiz for edit:', err);
+        showMessage('Error loading quiz', 'error');
+      }
+    }
+
+    async function deleteQuizFromFirestore(id) {
+      if (!confirm('Are you sure you want to delete this quiz? This action cannot be undone!')) {
+        return;
+      }
+
+      try {
+        const token = localStorage.getItem('idToken');
+
+        if (!token) {
+          showMessage('Please log in again', 'error');
+          return;
+        }
+
+        const res = await fetch(`/delete_quiz?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage(' Quiz deleted successfully!', 'success');
+          renderSavedQuizzes();
+          updateStats();
+        } else {
+          showMessage(' Failed to delete quiz: ' + (data.message || 'Unknown error'), 'error');
+        }
+      } catch (err) {
+        console.error('Error deleting quiz:', err);
+        showMessage(' Error deleting quiz', 'error');
+      }
+    }
+
+
+    async function loadQuizForEdit(id) {
+      try {
+        const res = await fetch(`/get_quiz?id=${id}`);
+        const data = await res.json();
+        if (!data.success) return showMessage('Quiz not found', 'error');
+
+        currentQuizDraft = data.quiz;
+        document.getElementById('quizId').value = data.quiz.id;
+        document.getElementById('quizTitle').value = data.quiz.title;
+        document.getElementById('quizClass').value = data.quiz.class || '';
+        renderQuestionList();
+        showMessage('Loaded quiz for editing', 'info');
+        navTo('quizzes');
+      } catch (err) {
+        console.error(err);
+        showMessage('Error loading quiz', 'error');
+      }
+    }
+
+
+    function simulateQuizRun(id) {
+      
+      const students = read(storage.studentsKey);
+      const quizzes = read(storage.quizzesKey);
+      const q = quizzes.find(x => x.id === id);
+      if (!q) return showMessage('Quiz not found', 'error');
+      
+      const results = (students.length ? students : [{ name: 'Sample Student' }]).map(s => ({
+        id: s.id || Date.now().toString(),
+        name: s.name || 'Sim',
+        score: Math.min(100, Math.round(Math.random() * 40 + 60)) // 60-100
+      }));
+      
+      q.results = results;
+      
+      const idx = quizzes.findIndex(x => x.id === id);
+      quizzes[idx] = q;
+      write(storage.quizzesKey, quizzes);
+      addActivity(`Simulated quiz run: ${q.title}`);
+      showMessage('Simulated quiz run saved (for analytics)', 'success');
+      renderSavedQuizzes();
+      updateStats();
+    }
+
+    function deleteQuiz(id) {
+      if (!confirm('Delete this quiz?')) return;
+      let quizzes = read(storage.quizzesKey);
+      quizzes = quizzes.filter(q => q.id !== id);
+      write(storage.quizzesKey, quizzes);
+      addActivity('Deleted a quiz');
+      showMessage('Quiz deleted', 'success');
+      renderSavedQuizzes();
+      updateStats();
+    }
+
+    function clearQuizCreator() {
+      currentQuizDraft = { id: null, title: '', class: '', subject: '', level: '', questions: [] };
+      document.getElementById('quizMetaForm').reset();
+      document.getElementById('questionList').innerHTML = '';
+      document.getElementById('quizId').value = '';
+      showMessage('Cleared quiz creator', 'info');
+    }
+
+    function renderQuizPage() {
+      
+      renderSavedQuizzes();
+      document.getElementById('quizCreatorWrap').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* -------------------------
+       Homework: create / list
+       ------------------------- */
+    function showHomeworkForm() { document.getElementById('homeworkFormWrap').classList.remove('hidden'); }
+    function hideHomeworkForm() { document.getElementById('homeworkFormWrap').classList.add('hidden'); document.getElementById('homeworkForm').reset(); }
+    function saveHomework(e) {
+      e.preventDefault();
+      const title = document.getElementById('hwTitle').value.trim();
+      const desc = document.getElementById('hwDesc').value.trim();
+      const cls = document.getElementById('hwClass').value.trim();
+      const due = document.getElementById('hwDue').value;
+      const hw = { id: Date.now().toString(), title, desc, class: cls, due, createdAt: new Date().toISOString() };
+      const list = read(storage.homeworkKey);
+      list.unshift(hw);
+      write(storage.homeworkKey, list);
+      hideHomeworkForm();
+      renderHomework();
+      addActivity(`Assigned homework: ${title}`);
+      showMessage('Homework assigned', 'success');
+      updateStats();
+    }
+    function renderHomework() {
+      const wrap = document.getElementById('homeworkList');
+      const list = read(storage.homeworkKey);
+      wrap.innerHTML = '';
+      if (!list.length) { wrap.innerHTML = '<p class="text-gray-500">No homework assigned yet.</p>'; document.getElementById('statHomeworks').textContent = '0'; return; }
+      list.forEach(hw => {
+        const el = document.createElement('div');
+        el.className = 'p-3 bg-gray-50 rounded-xl flex justify-between items-start';
+        el.innerHTML = `<div>
+            <p class="font-semibold">${hw.title}</p>
+            <p class="text-sm text-gray-600">${hw.class || 'All'} • Due: ${hw.due || 'N/A'}</p>
+            <p class="text-xs text-gray-500 mt-2">${hw.desc}</p>
+          </div>
+          <div class="flex flex-col gap-2">
+            <button class="px-3 py-1 bg-yellow-100 rounded-lg text-sm" onclick="editHomework('${hw.id}')">Edit</button>
+            <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="deleteHomework('${hw.id}')">Delete</button>
+          </div>`;
+        wrap.appendChild(el);
+      });
+      document.getElementById('statHomeworks').textContent = list.length;
+    }
+    function editHomework(id) {
+      const list = read(storage.homeworkKey);
+      const hw = list.find(x => x.id === id);
+      if (!hw) return;
+      document.getElementById('hwTitle').value = hw.title;
+      document.getElementById('hwDesc').value = hw.desc;
+      document.getElementById('hwClass').value = hw.class;
+      document.getElementById('hwDue').value = hw.due || '';
+      document.getElementById('homeworkFormWrap').classList.remove('hidden');
+      
+      deleteHomework(id, true);
+    }
+    function deleteHomework(id, silent = false) {
+      if (!silent && !confirm('Delete this homework?')) return;
+      let list = read(storage.homeworkKey);
+      list = list.filter(x => x.id !== id);
+      write(storage.homeworkKey, list);
+      renderHomework();
+      if (!silent) {
+        addActivity('Deleted homework');
+        showMessage('Homework deleted', 'success');
+      }
+      updateStats();
+    }
+
+    /* -------------------------
+       Announcements
+       ------------------------- */
+    function showAnnouncementForm() { document.getElementById('announceFormWrap').classList.remove('hidden'); }
+    function hideAnnouncementForm() { document.getElementById('announceFormWrap').classList.add('hidden'); document.getElementById('announceForm').reset(); }
+    function saveAnnouncement(e) {
+      e.preventDefault();
+      const title = document.getElementById('announceTitle').value.trim();
+      const body = document.getElementById('announceBody').value.trim();
+      const list = read(storage.announcementsKey);
+      list.unshift({ id: Date.now().toString(), title, body, time: new Date().toISOString() });
+      write(storage.announcementsKey, list);
+      hideAnnouncementForm();
+      renderAnnouncements();
+      addActivity(`Announcement posted: ${title}`);
+      showMessage('Announcement posted', 'success');
+    }
+    function renderAnnouncements() {
+      const wrap = document.getElementById('announceList');
+      const list = read(storage.announcementsKey);
+      wrap.innerHTML = '';
+      if (!list.length) { wrap.innerHTML = '<p class="text-gray-500">No announcements yet.</p>'; return; }
+      list.forEach(a => {
+        const el = document.createElement('div');
+        el.className = 'p-3 bg-yellow-50 rounded-xl flex justify-between items-start';
+        el.innerHTML = `<div>
+            <p class="font-semibold">${a.title}</p>
+            <p class="text-xs text-gray-600">${new Date(a.time).toLocaleString()}</p>
+            <p class="text-sm text-gray-700 mt-2">${a.body}</p>
+          </div>
+          <div>
+            <button class="px-3 py-1 bg-red-100 rounded-lg text-sm" onclick="deleteAnnouncement('${a.id}')">Delete</button>
+          </div>`;
+        wrap.appendChild(el);
+      });
+    }
+    function deleteAnnouncement(id) {
+      if (!confirm('Delete announcement?')) return;
+      let list = read(storage.announcementsKey);
+      list = list.filter(x => x.id !== id);
+      write(storage.announcementsKey, list);
+      renderAnnouncements();
+      showMessage('Announcement deleted', 'info');
+    }
+
+    /* -------------------------
+       Analytics (Chart.js)
+       ------------------------- */
+    let analyticsChart = null;
+    function gatherAnalyticsData(range = '7') {
+      // Build labels and dataset using quizzes and quiz.results if present.
+      const quizzes = read(storage.quizzesKey);
+      // We'll use up to last 8 quizzes with results for chart.
+      const qWithResults = quizzes.filter(q => q.results && q.results.length).slice(0, 8);
+      const labels = qWithResults.map(q => q.title);
+      const avgScores = qWithResults.map(q => {
+        const total = q.results.reduce((s, r) => s + (r.score || 0), 0);
+        return Math.round(total / q.results.length);
+      });
+      return { labels, data: avgScores };
+    }
+
+    function renderAnalyticsChart(force = false) {
+      const ctx = document.getElementById('analyticsChart') || document.getElementById('analyticsChartLarge');
+      const payload = gatherAnalyticsData();
+      if (!ctx) return;
+      const config = {
+        type: 'bar',
+        data: {
+          labels: payload.labels.length ? payload.labels : ['No data'],
+          datasets: [{
+            label: 'Average score (%)',
+            data: payload.data.length ? payload.data : [0],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, max: 100 } }
+        }
+      };
+      
+      if (analyticsChart) analyticsChart.destroy();
+      analyticsChart = new Chart(ctx, config);
+      
+      const ctx2 = document.getElementById('analyticsChartLarge');
+      if (ctx2) {
+        if (window.analyticsChartLarge) window.analyticsChartLarge.destroy();
+        window.analyticsChartLarge = new Chart(ctx2, config);
+      }
+      
+      if (payload.data.length) {
+        const avg = Math.round(payload.data.reduce((s, n) => s + n, 0) / payload.data.length);
+        document.getElementById('statAvg').textContent = avg + '%';
+      } else {
+        document.getElementById('statAvg').textContent = '0%';
+      }
+    }
+
+    /* -------------------------
+       Activities & Initial state
+       ------------------------- */
+    function init() {
+      
+      navTo('dashboard');
+      
+      renderRecentActivities();
+      loadAllStudents();
+      renderSavedQuizzes();
+      renderHomework();
+      renderAnnouncements();
+      updateStats();
+      renderAnalyticsChart();
+      showMessage('🎉 Welcome back, Mr. Huzaifa Khan!', 'success', 2500);
+    }
+
+    function updateStats() {
+      const students = read(storage.studentsKey).length;
+      const quizzes = read(storage.quizzesKey).length;
+      const hw = read(storage.homeworkKey).length;
+      document.getElementById('statStudents').textContent = students;
+      document.getElementById('statQuizzes').textContent = quizzes;
+      document.getElementById('statHomeworks').textContent = hw;
+    }
+
+    /* -------------------------
+       Helper: edit / delete quiz
+       ------------------------- */
+    function loadSavedStateToDraft(id) {
+      const quizzes = read(storage.quizzesKey);
+      const q = quizzes.find(x => x.id === id);
+      if (q) {
+        currentQuizDraft = JSON.parse(JSON.stringify(q));
+        document.getElementById('quizTitle').value = q.title;
+        document.getElementById('quizClass').value = q.class || '';
+        renderQuestionList();
+      }
+    }
+
+    
+    window.addEventListener('load', init);
+
+    
+    function createQuiz() { navTo('quizzes'); showMessage('Opening Quiz Creator...', 'info'); }
+    function viewReports() { navTo('analytics'); showMessage('Loading detailed reports...', 'info'); }
+    function manageStudents() { navTo('students'); showMessage('Opening Student Management...', 'info'); }
+    function assignHomework() { navTo('homework'); showMessage('Opening Assignment Creator...', 'info'); }
+
+    
+    function renderQuizPageAndOpenCreator() { navTo('quizzes'); startNewQuiz(); }
+
+
+    window.createQuiz = createQuiz;
+    window.viewReports = viewReports;
+    window.manageStudents = manageStudents;
+    window.assignHomework = assignHomework;
+    window.navTo = navTo;
+    window.startNewQuiz = startNewQuiz;
+    window.renderSavedQuizzes = renderSavedQuizzes;
+  </script>
+</body>
+
+</html>
+
+
+<script>
+  async function fetchAndRenderUser() {
+    const token = localStorage.getItem('idToken');
+    if (!token) {
+      window.location.href = '/signup';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/profile', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        localStorage.removeItem('idToken');
+        window.location.href = '/signup';
+        return;
+      }
+
+      const body = await res.json();
+      console.log("profile", body.profile);
+
+      
+      if (body.ok && body.profile && body.profile.uid) {
+        localStorage.setItem('teacherUID', body.profile.uid);
+        console.log('Teacher UID saved:', body.profile.uid);
+      } else {
+        console.error('UID not found in profile response');
+        showMessage(' Profile error. Please log in again.', 'error');
+        localStorage.clear();
+        window.location.href = '/signup';
+        return;
+      }
+
+      document.getElementById('teacherName').textContent = body.profile.name || "Unknown Teacher";
+      document.getElementById('teacherSubject').textContent = body.profile.role || "Teacher";
+
+      showMessage(`🎉 Welcome back, ${body.profile.name}!`, 'success');
+
+    } catch (err) {
+      console.error(err);
+      localStorage.removeItem('idToken');
+      window.location.href = '/signup';
+    }
+  }
+
+  window.onload = fetchAndRenderUser;
+</script>

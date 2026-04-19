@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Available Quizzes - ShikshaDrill</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-green-50 via-teal-50 to-blue-50 min-h-screen">
+
+
+  <header class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-white shadow-lg relative z-10">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-xl">🎓</div>
+        <h1 class="text-2xl font-bold">ShikshaDrill Quizzes</h1>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="window.location.href='/level'"
+          class="bg-white text-black px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition">
+          📊 Levels
+        </button>
+        <button onclick="window.location.href='/student'"
+          class="bg-white text-black px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition">
+          ← Back
+        </button>
+      </div>
+    </div>
+  </header>
+
+
+  <div class="max-w-4xl mx-auto py-10 px-4">
+
+    <div id="levelBadge" class="text-center mb-6"></div>
+
+    <div class="text-center mb-8">
+      <h2 class="text-3xl font-bold text-black mb-2">🧠 Available Quizzes</h2>
+      <p class="text-gray-600" id="subtitle">Choose a quiz to test your knowledge!</p>
+    </div>
+
+
+
+    <div id="loading" class="text-center py-10">
+      <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent">
+      </div>
+      <p class="text-gray-600 mt-4">Loading quizzes...</p>
+    </div>
+
+
+    <div id="quizList" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden"></div>
+
+
+    <div id="emptyState" class="text-center py-10 hidden">
+      <div class="text-6xl mb-4">📚</div>
+      <p class="text-gray-600 text-lg">No quizzes available for this level yet.</p>
+      <p class="text-gray-500 text-sm mt-2">Try a different level or check back later!</p>
+      <button onclick="window.location.href='/level'"
+        class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700">
+        Choose Different Level
+      </button>
+    </div>
+
+
+    <div id="errorState" class="text-center py-10 hidden">
+      <div class="text-6xl mb-4">⚠️</div>
+      <p class="text-red-600 text-lg font-semibold">Failed to load quizzes</p>
+      <p class="text-gray-600 text-sm mt-2">Please try again later</p>
+      <button onclick="location.reload()"
+        class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-700 transition">
+        Retry
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentLevel = null;
+    let currentSubject = null;
+
+    async function loadQuizzes() {
+      const loading = document.getElementById('loading');
+      const quizList = document.getElementById('quizList');
+      const emptyState = document.getElementById('emptyState');
+      const errorState = document.getElementById('errorState');
+
+      
+      loading.classList.remove('hidden');
+      quizList.classList.add('hidden');
+      emptyState.classList.add('hidden');
+      errorState.classList.add('hidden');
+
+      
+      const params = new URLSearchParams(window.location.search);
+      const level = params.get('level');
+      const subject = params.get('subject');
+      currentLevel = level;
+      currentSubject = subject;
+
+      console.log('Loading all quizzes - Level:', level, 'Subject:', subject);
+
+      
+      const subjectNames = {
+        science: '🔬 Science',
+        technology: '💻 Technology',
+        engineering: '⚙️ Engineering',
+        mathematics: '📐 Mathematics'
+      };
+
+      const subjectName = subject ? subjectNames[subject] || 'All Subjects' : 'All Subjects';
+
+      if (level) {
+        const levelInfo = {
+          easy: { emoji: '🌱', text: 'Easy Level', color: 'bg-green-500' },
+          medium: { emoji: '⚡', text: 'Medium Level', color: 'bg-yellow-500' },
+          hard: { emoji: '🔥', text: 'Hard Level', color: 'bg-red-500' }
+        };
+        const info = levelInfo[level] || levelInfo.easy;
+        document.getElementById('levelBadge').innerHTML =
+          `<span class="${info.color} text-white px-6 py-3 rounded-full text-xl font-bold inline-block">${info.emoji} ${info.text}</span>`;
+        document.getElementById('subtitle').textContent = `${subjectName} - Challenge yourself with ${level} level quizzes!`;
+      } else if (subject) {
+        document.getElementById('subtitle').textContent = `${subjectName} Quizzes`;
+      } else {
+        document.getElementById('subtitle').textContent = 'Choose a quiz to test your knowledge!';
+      }
+
+      try {
+        
+        const queryParams = [];
+        if (level) {
+          queryParams.push(`level=${level}`);
+        }
+        if (subject) {
+          queryParams.push(`subject=${subject}`);
+        }
+
+        const queryString = queryParams.length > 0 ? '?' + queryParams.join('&') : '';
+
+        
+        const normalUrl = '/get_quizzes' + queryString;
+        const puzzleUrl = '/get_puzzle_quizzes' + queryString;
+
+        console.log('Fetching from:', normalUrl, puzzleUrl);
+
+        const [normalRes, puzzleRes] = await Promise.all([
+          fetch(normalUrl),
+          fetch(puzzleUrl)
+        ]);
+
+        if (!normalRes.ok || !puzzleRes.ok) {
+          throw new Error('Failed to fetch quizzes');
+        }
+
+        const normalQuizzes = await normalRes.json();
+        const puzzleQuizzes = await puzzleRes.json();
+
+        console.log('Received normal quizzes:', normalQuizzes.length);
+        console.log('Received puzzle quizzes:', puzzleQuizzes.length);
+
+        
+        const allQuizzes = [];
+
+        
+        if (Array.isArray(normalQuizzes)) {
+          normalQuizzes.forEach(q => {
+            allQuizzes.push({ ...q, quizType: 'normal' });
+          });
+        }
+
+        if (Array.isArray(puzzleQuizzes)) {
+          puzzleQuizzes.forEach(q => {
+            allQuizzes.push({ ...q, quizType: 'puzzle' });
+          });
+        }
+
+        console.log('Total quizzes:', allQuizzes.length);
+
+        
+        loading.classList.add('hidden');
+
+        
+        if (allQuizzes.length === 0) {
+          console.log('No quizzes found, showing empty state');
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        
+        const levelOrder = { easy: 1, medium: 2, hard: 3 };
+        allQuizzes.sort((a, b) => {
+          const levelA = levelOrder[a.level] || 0;
+          const levelB = levelOrder[b.level] || 0;
+          return levelA - levelB;
+        });
+
+        console.log('Building quiz cards...');
+
+        
+        let html = '';
+        allQuizzes.forEach((q, index) => {
+          console.log(`Quiz ${index + 1}:`, q);
+
+          const title = q.title || 'Untitled Quiz';
+          const className = q.class || 'All Classes';
+          const quizId = q.id;
+          const quizLevel = q.level || 'easy';
+          const quizType = q.quizType; // 'normal' or 'puzzle'
+
+          
+          let itemCount = 0;
+          let itemLabel = '';
+          if (quizType === 'puzzle') {
+            itemCount = (q.puzzles && q.puzzles.length) || 0;
+            itemLabel = 'Puzzles';
+          } else {
+            itemCount = (q.questions && q.questions.length) || 0;
+            itemLabel = 'Questions';
+          }
+
+          
+          const levelBadges = {
+            easy: '🌱 Easy',
+            medium: '⚡ Medium',
+            hard: '🔥 Hard'
+          };
+          const levelColors = {
+            easy: 'bg-green-100 text-green-700',
+            medium: 'bg-yellow-100 text-yellow-700',
+            hard: 'bg-red-100 text-red-700'
+          };
+
+          
+          const icon = quizType === 'puzzle' ? '🧩' : '📝';
+          const gradientColor = quizType === 'puzzle' ? 'from-pink-400 to-orange-500' : 'from-green-400 to-teal-500';
+          const hoverBorderColor = quizType === 'puzzle' ? 'hover:border-pink-400' : 'hover:border-green-400';
+          const buttonColor = quizType === 'puzzle' ? 'text-pink-600' : 'text-green-600';
+
+          html += `
+      <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border-2 border-transparent ${hoverBorderColor}"
+           onclick="startQuiz('${quizId}', '${quizType}')">
+        <div class="flex items-start justify-between mb-3">
+          <div class="w-12 h-12 bg-gradient-to-br ${gradientColor} rounded-xl flex items-center justify-center text-2xl">
+            ${icon}
+          </div>
+          <div class="flex flex-col items-end gap-1">
+            <span class="${levelColors[quizLevel]} px-3 py-1 rounded-full text-xs font-semibold">
+              ${levelBadges[quizLevel]}
+            </span>
+            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+              ${itemCount} ${itemLabel}
+            </span>
+          </div>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 mb-2">${title}</h3>
+        <p class="text-gray-600 text-sm mb-3">
+          <span class="inline-flex items-center">
+            <span class="mr-1">📚</span> ${className}
+          </span>
+        </p>
+        <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+          <span class="text-sm text-gray-500">Click to start</span>
+          <span class="${buttonColor} font-semibold text-sm">Start Quiz →</span>
+        </div>
+      </div>`;
+        });
+
+        console.log('Setting innerHTML...');
+        quizList.innerHTML = html;
+        quizList.classList.remove('hidden');
+        console.log('Quizzes displayed successfully');
+
+      } catch (error) {
+        console.error('Error loading quizzes:', error);
+        loading.classList.add('hidden');
+        errorState.classList.remove('hidden');
+      }
+    }
+
+    function startQuiz(quizId, quizType) {
+      if (!quizId) {
+        alert('Invalid quiz ID');
+        return;
+      }
+
+      
+      if (quizType === 'puzzle') {
+        window.location.href = `/puzzle_quiz?id=${quizId}`;
+      } else {
+        window.location.href = `/quiz?id=${quizId}`;
+      }
+    }
+
+    
+    async function checkAuthAndLoad() {
+      const token = localStorage.getItem('idToken');
+
+      if (!token) {
+        window.location.href = '/signup';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+          localStorage.removeItem('idToken');
+          window.location.href = '/signup';
+          return;
+        }
+
+       
+        await loadQuizzes();
+
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        localStorage.removeItem('idToken');
+        window.location.href = '/signup';
+      }
+    }
+
+    
+    window.onload = checkAuthAndLoad;
+  </script>
+
+</body>
+
+</html>
