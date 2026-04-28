@@ -1,6 +1,6 @@
 # 🎓 ShikshaDrill
 
-**Interactive STEM Learning Platform with Live Chat, Quizzes, and Gamification**
+**Interactive STEM Learning Platform with Live Chat, Quizzes, and Gamification etc **
 
 ---
 
@@ -12,7 +12,7 @@ ShikshaDrill is an interactive learning platform designed to make education enga
 
 ## ✨ Features
 
-* 📚 **Subject-wise Learning Content** (NCERT, syllabus, videos, test papers)
+* 📚 **Subject-wise Learning Content** (NCERT, Syllabus, Videos, Test papers)
 * 🧠 **Interactive Quizzes & Puzzle Games**
 * 💬 **Live Chat System (Real-time communication using SocketIO)**
 * 👩‍🏫 **Student & Teacher Dashboards**
@@ -25,7 +25,7 @@ ShikshaDrill is an interactive learning platform designed to make education enga
 
 **Frontend:**
 
-* HTML, CSS, JavaScript
+* HTML, CSS, JavaScript, 
 
 **Backend:**
 
