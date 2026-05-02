@@ -1,6 +1,6 @@
 # 🎓 ShikshaDrill
 
-**Interactive STEM Learning Platform with Live Chat, Quizzes, and Gamification etc **
+**Interactive STEM Learning Platform with Live Chat, Quizzes, and Gamification etc**
 
 ---
 
@@ -12,7 +12,7 @@ ShikshaDrill is an interactive learning platform designed to make education enga
 
 ## ✨ Features
 
-* 📚 **Subject-wise Learning Content** (NCERT, Syllabus, Videos, Test papers)
+* 📚 **Subject-wise Learning Content (NCERT, Syllabus, Videos, Test papers)**
 * 🧠 **Interactive Quizzes & Puzzle Games**
 * 💬 **Live Chat System (Real-time communication using SocketIO)**
 * 👩‍🏫 **Student & Teacher Dashboards**
@@ -122,15 +122,12 @@ Sensitive files like `.env` and `serviceAccountKey.json` are not included in the
 
 ## 👥 Team (Smart India Hackathon)
 
-**Team Leader**  
-- Sakshi Chaubey
-
 **Team Members**  
 1. Khateeba Ruhulla  
 2. Suhani Maurya  
 3. Jahnvi Agrahari  
 4. Mohd Huzaifa Khan  
-5. Akshay Yadav
+5. Sakshi Chaubey
 
 ---
 
