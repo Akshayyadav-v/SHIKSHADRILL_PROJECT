@@ -25,7 +25,7 @@ ShikshaDrill is an interactive learning platform designed to make education enga
 
 **Frontend:**
 
-* HTML, CSS, JavaScript, 
+* HTML, CSS, JavaScript 
 
 **Backend:**
 
